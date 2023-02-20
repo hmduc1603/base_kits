@@ -1,0 +1,136 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"packages",
+				"pub",
+				"run",
+				"build_runner",
+				"build",
+				"--delete-conflicting-outputs"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: flutter packages pub run build_runner build --delete-conflicting-outputs"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"pub",
+				"get"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: flutter pub get"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"clean"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: clean"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"pub",
+				"outdated"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: pub outdated"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"pub",
+				"upgrade",
+				"--major-versions"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: flutter pub upgrade --major-versions"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"create",
+				".",
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: create"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"pub",
+				"run",
+				"flutter_native_splash:create",
+				"--flutter_native_splash.yaml"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: flutter_native_splash:create"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"build",
+				"apk",
+				"--release"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: build apk prod"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"run",
+				"--profile"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: run profile"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"run",
+				"--flavor",
+				"production"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: run prod"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"build",
+				"apk",
+				"--analyze-size",
+				"--target-platform=android-arm64"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: build analyze"
+		},
+	]
+}

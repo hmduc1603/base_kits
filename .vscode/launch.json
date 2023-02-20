@@ -1,0 +1,37 @@
+{
+    "configurations": [
+        {
+            "name": "develop",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "args": [
+                "--flavor",
+                "dev"
+            ],
+            "flutterMode": "debug"
+        },
+        {
+            "name": "production",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "args": [
+                "--flavor",
+                "prod"
+            ],
+            "flutterMode": "release"
+        },
+        {
+            "name": "profile",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "args": [
+                "--flavor",
+                "prod"
+            ],
+            "flutterMode": "profile"
+        }
+    ]
+}

@@ -1,5 +1,8 @@
 class AdLimitation {
   final int dailyLimitation;
-
-  AdLimitation(this.dailyLimitation);
+  final int showAfterEveryNumber;
+  AdLimitation({
+    required this.dailyLimitation,
+    this.showAfterEveryNumber = 2,
+  });
 }

@@ -21,7 +21,6 @@ class StoreKit {
   final purchase = PublishSubject<bool>();
 
   init() async {
-    await LocalStorage().init();
     // Check Store
     final bool isAvailable = await InAppPurchase.instance.isAvailable();
     // Listen to purchase

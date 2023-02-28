@@ -12,6 +12,7 @@ export 'src/counting/base_limit_counting.dart';
 export 'src/admob/entity/ad_limitation.dart';
 export 'src/admob/entity/ads_counter.dart';
 export 'src/store/entity/local_purchase_entity.dart';
+export 'src/rating/rating_manager.dart';
 
 class BaseKits {
   static final BaseKits _instance = BaseKits._internal();

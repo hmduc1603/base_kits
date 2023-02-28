@@ -4,7 +4,7 @@ part 'local_purchase_entity.g.dart';
 
 @JsonSerializable()
 class LocalPurchaseEntity {
-  String purchasedDateInMillisecond;
+  int purchasedDateInMillisecond;
   String productId;
 
   LocalPurchaseEntity({
@@ -12,7 +12,8 @@ class LocalPurchaseEntity {
     required this.productId,
   });
 
-  factory LocalPurchaseEntity.fromJson(Map<String, dynamic> json) => _$LocalPurchaseEntityFromJson(json);
+  factory LocalPurchaseEntity.fromJson(Map<String, dynamic> json) =>
+      _$LocalPurchaseEntityFromJson(json);
 
   Map<String, dynamic> toJson() => _$LocalPurchaseEntityToJson(this);
 }

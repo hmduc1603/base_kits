@@ -73,7 +73,7 @@ class StoreKit {
             LocalStorage().setLastLocalPurchase(LocalPurchaseEntity(
               productId: successfullPurchaseDetail.productID,
               purchasedDateInMillisecond:
-                  successfullPurchaseDetail.transactionDate!,
+                  int.parse(successfullPurchaseDetail.transactionDate!),
             ));
           } else {
             log('Not found any purchases', name: 'StoreKit');
@@ -111,7 +111,8 @@ class StoreKit {
     final lastPurchase = LocalStorage().lastLocalPurchase;
     if (lastPurchase != null && kReleaseMode) {
       final isOutdated = _isPurchaseOutdated(
-          lastPurchase.purchasedDateInMillisecond, lastPurchase.productId);
+          lastPurchase.purchasedDateInMillisecond.toString(),
+          lastPurchase.productId);
       if (!isOutdated) {
         log('Restored premium successfully from local storage',
             name: 'StoreKit');

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:base_kits/base_kits.dart';
+import 'package:base_kits/src/rating/rating_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorage {
@@ -14,6 +15,22 @@ class LocalStorage {
     prefs = await SharedPreferences.getInstance();
   }
 
+  RatingEntity? get ratingEntity {
+    final data = prefs.getString("_kRatingEntity");
+    if (data != null) {
+      return RatingEntity.fromJson(jsonDecode(data));
+    }
+    return null;
+  }
+
+  setLastRatingEntity(RatingEntity? ratingEntity) async {
+    log('setLastRatingEntity', name: 'LocalStorage');
+    if (ratingEntity != null) {
+      await prefs.setString(
+          "_kLastLocalPurchase", jsonEncode(ratingEntity.toJson()));
+    }
+  }
+
   setLastLocalPurchase(LocalPurchaseEntity? localPurchaseEntity) async {
     log('setLastLocalPurchase', name: 'LocalStorage');
     if (localPurchaseEntity != null) {
@@ -25,7 +42,8 @@ class LocalStorage {
   LocalPurchaseEntity? get lastLocalPurchase {
     final data = prefs.getString("_kLastLocalPurchase");
     if (data != null) {
-      return LocalPurchaseEntity.fromJson(jsonDecode(data));
+      final result = jsonDecode(data);
+      return LocalPurchaseEntity.fromJson(result);
     }
     return null;
   }

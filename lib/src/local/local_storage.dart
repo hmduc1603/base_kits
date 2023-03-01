@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:base_kits/base_kits.dart';
-import 'package:base_kits/src/rating/rating_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorage {
@@ -27,7 +26,7 @@ class LocalStorage {
     log('setLastRatingEntity', name: 'LocalStorage');
     if (ratingEntity != null) {
       await prefs.setString(
-          "_kLastLocalPurchase", jsonEncode(ratingEntity.toJson()));
+          "_kRatingEntity", jsonEncode(ratingEntity.toJson()));
     }
   }
 

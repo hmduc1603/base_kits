@@ -168,15 +168,18 @@ class AdmobKit {
             if (showAfterLoaded) {
               showAppOpenAd(onAdDimissed: onAdDimissed);
             }
+            onAdDimissed != null ? onAdDimissed() : null;
           },
           onAdFailedToLoad: (LoadAdError error) {
             log('OpenAds failed to load: $error');
+            onAdDimissed != null ? onAdDimissed() : null;
           },
         ),
         orientation: AppOpenAd.orientationPortrait,
       );
     } catch (e) {
       log(e.toString());
+      onAdDimissed != null ? onAdDimissed() : null;
     }
   }
 
@@ -207,11 +210,12 @@ class AdmobKit {
         return;
       }
       _appOpenAd?.fullScreenContentCallback = FullScreenContentCallback(
+        onAdFailedToShowFullScreenContent: (ad, error) {
+          onAdDimissed != null ? onAdDimissed() : null;
+        },
         onAdDismissedFullScreenContent: (ad) {
           preLoadOpenAds();
-          if (onAdDimissed != null) {
-            onAdDimissed();
-          }
+          onAdDimissed != null ? onAdDimissed() : null;
         },
       );
       await _appOpenAd?.show();

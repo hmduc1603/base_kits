@@ -9,10 +9,10 @@ part 'rating_manager.g.dart';
 
 @JsonSerializable()
 class RatingEntity {
-  int count;
+  bool isRequested;
   int lastRequestedDateInMilliseconds;
   RatingEntity({
-    required this.count,
+    this.isRequested = false,
     required this.lastRequestedDateInMilliseconds,
   });
 
@@ -44,7 +44,7 @@ class RatingManager {
         await _inAppReview.requestReview();
         LocalStorage().setLastRatingEntity(
           RatingEntity(
-            count: 1,
+            isRequested: true,
             lastRequestedDateInMilliseconds:
                 DateTime.now().millisecondsSinceEpoch,
           ),
@@ -52,14 +52,16 @@ class RatingManager {
       } else {
         final diff =
             lastRating.lastRequestedDate.difference(DateTime.now()).inDays;
-        if (diff % _afterNDay == 0) {
+        if (diff % _afterNDay == 0 && !lastRating.isRequested) {
           await _inAppReview.requestReview();
           LocalStorage().setLastRatingEntity(
             lastRating
-              ..count = lastRating.count + 1
+              ..isRequested = true
               ..lastRequestedDateInMilliseconds =
                   DateTime.now().millisecondsSinceEpoch,
           );
+        } else {
+          LocalStorage().setLastRatingEntity(lastRating..isRequested = false);
         }
       }
     } catch (e) {

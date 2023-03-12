@@ -62,11 +62,19 @@ class StoreKit {
             log('Successfully restored/purchase purchase!!!: ${successfullPurchaseDetail.purchaseID}',
                 name: 'StoreKit');
             // Analytic
+            final eventParams =
+                successfullPurchaseDetail.status == PurchaseStatus.purchased
+                    ? {
+                        "value": listProductDetails.firstWhereOrNull(
+                            (e) => e.id == successfullPurchaseDetail.productID)
+                      }
+                    : null;
             AnalyticKit().logEvent(
                 name:
                     successfullPurchaseDetail.status == PurchaseStatus.purchased
                         ? AnalyticEvent.purchaseSuccess
-                        : AnalyticEvent.purchaseRestore);
+                        : AnalyticEvent.purchaseRestore,
+                params: eventParams);
             // Notify
             premiumPublishSub.add(true);
             // Save to local purchase

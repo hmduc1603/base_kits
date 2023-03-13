@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:base_kits/base_kits.dart';
 import 'package:base_kits/src/local/local_storage.dart';
+import 'package:base_kits/src/store/entity/subscription_tracking.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
@@ -62,19 +63,20 @@ class StoreKit {
             log('Successfully restored/purchase purchase!!!: ${successfullPurchaseDetail.purchaseID}',
                 name: 'StoreKit');
             // Analytic
-            final eventParams =
-                successfullPurchaseDetail.status == PurchaseStatus.purchased
-                    ? {
-                        "value": listProductDetails.firstWhereOrNull(
-                            (e) => e.id == successfullPurchaseDetail.productID)
-                      }
-                    : null;
+            SubscriptionTracking().update(
+              value: listProductDetails
+                  .firstWhereOrNull(
+                      (e) => e.id == successfullPurchaseDetail.productID)
+                  ?.rawPrice,
+              productId: successfullPurchaseDetail.productID,
+            );
+
             AnalyticKit().logEvent(
-                name:
-                    successfullPurchaseDetail.status == PurchaseStatus.purchased
-                        ? AnalyticEvent.purchaseSuccess
-                        : AnalyticEvent.purchaseRestore,
-                params: eventParams);
+              name: successfullPurchaseDetail.status == PurchaseStatus.purchased
+                  ? AnalyticEvent.purchaseSuccess
+                  : AnalyticEvent.purchaseRestore,
+              params: SubscriptionTracking().toMap(),
+            );
             // Notify
             premiumPublishSub.add(true);
             // Save to local purchase

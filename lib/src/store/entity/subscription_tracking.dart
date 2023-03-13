@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 class SubscriptionTracking {
   static final SubscriptionTracking _instance =
       SubscriptionTracking._internal();
@@ -17,7 +19,6 @@ class SubscriptionTracking {
       'value': value,
       'criteria': criteria,
     };
-    data.addAll(params);
     return data;
   }
 
@@ -28,10 +29,12 @@ class SubscriptionTracking {
     String? criteria,
     Map<String, dynamic>? params,
   }) {
-    screenName = screenName ?? this.screenName;
-    productId = productId ?? this.productId;
-    value = value ?? this.value;
-    criteria = criteria ?? "";
-    params = params ?? {};
+    this.screenName = screenName ?? this.screenName;
+    this.productId = productId ?? this.productId;
+    this.value = value ?? this.value;
+    this.criteria = criteria ?? "";
+    this.params = params ?? {};
+
+    log("tracking updated:${toMap()}", name: "SubscriptionTracking");
   }
 }

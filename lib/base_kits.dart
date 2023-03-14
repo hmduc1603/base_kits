@@ -25,6 +25,6 @@ class BaseKits {
   factory BaseKits() => _instance;
 
   init() async {
-    LocalStorage().init();
+    await LocalStorage().init();
   }
 }

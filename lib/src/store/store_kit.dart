@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:base_kits/base_kits.dart';
 import 'package:base_kits/src/local/local_storage.dart';
-import 'package:base_kits/src/store/entity/subscription_tracking.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';

@@ -1,7 +1,7 @@
-
 import 'dart:convert';
 
 class AdConfig {
+  final String adId;
   final String bannerId;
   final String appOpenId;
   final String rewardId;
@@ -11,6 +11,7 @@ class AdConfig {
     required this.appOpenId,
     required this.rewardId,
     required this.interstitialId,
+    required this.adId,
   });
 
   Map<String, dynamic> toMap() {
@@ -18,6 +19,7 @@ class AdConfig {
       'bannerId': bannerId,
       'appOpenId': appOpenId,
       'rewardId': rewardId,
+      'adId': adId,
       'interstitialId': interstitialId,
     };
   }
@@ -28,10 +30,12 @@ class AdConfig {
       appOpenId: map['appOpenId'] as String,
       rewardId: map['rewardId'] as String,
       interstitialId: map['interstitialId'] as String,
+      adId: map['adId'] as String,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory AdConfig.fromJson(String source) => AdConfig.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory AdConfig.fromJson(String source) =>
+      AdConfig.fromMap(json.decode(source) as Map<String, dynamic>);
 }

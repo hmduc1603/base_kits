@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:base_kits/base_kits.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:easy_ads_flutter/easy_ads_flutter.dart';
+import 'package:flutter/foundation.dart';
 
 class AdmobKit {
   static final AdmobKit _instance = AdmobKit._internal();
@@ -11,58 +11,23 @@ class AdmobKit {
   factory AdmobKit() => _instance;
 
   late AdConfig _adConfig;
-  AppOpenAd? _appOpenAd;
-  RewardedInterstitialAd? _rewardedInterstitialAd;
-  InterstitialAd? _interstitialAd;
+  AdmobEventListener? _admobEventListener;
 
-  preloadInterstitialAd({
-    bool showAfterBeingLoaded = false,
-  }) {
-    try {
-      InterstitialAd.load(
-          adUnitId: _adConfig.interstitialId,
-          request: const AdRequest(),
-          adLoadCallback: InterstitialAdLoadCallback(
-            onAdLoaded: (InterstitialAd ad) {
-              _interstitialAd = ad;
-              if (showAfterBeingLoaded) {
-                forceShowInterstitialAd();
-              }
-            },
-            onAdFailedToLoad: (LoadAdError error) {
-              log('InterstitialAd failed to load: $error');
-            },
-          )).onError((error, stackTrace) {
-        log(error.toString());
-      });
-    } catch (e) {
-      log(e.toString());
-    }
+  EasyBannerAd createBannerAd() {
+    return const EasyBannerAd(
+        adNetwork: AdNetwork.admob, adSize: AdSize.fullBanner);
   }
 
-  Future<void> forceShowInterstitialAd({
-    VoidCallback? onComplete,
+  Future<void> showInterstitialAd({
+    VoidCallback? readyToShow,
     VoidCallback? reachLimitation,
   }) async {
     try {
       AdsCountingManager().checkShouldShowAds(
         onShouldShowAds: (shouldShowAds) {
           if (shouldShowAds) {
-            if (_interstitialAd != null) {
-              _interstitialAd?.fullScreenContentCallback =
-                  FullScreenContentCallback(
-                onAdFailedToShowFullScreenContent: (ad, error) {
-                  onComplete != null ? onComplete() : null;
-                },
-                onAdDismissedFullScreenContent: (_) {
-                  preloadInterstitialAd();
-                  onComplete != null ? onComplete() : null;
-                },
-              );
-              _interstitialAd?.show();
-            } else {
-              preloadInterstitialAd(showAfterBeingLoaded: true);
-            }
+            readyToShow != null ? readyToShow() : null;
+            EasyAds.instance.showAd(AdUnitType.interstitial);
           } else {
             reachLimitation != null ? reachLimitation() : null;
           }
@@ -73,119 +38,18 @@ class AdmobKit {
     }
   }
 
-  Future<void> preloadRewardInterAds() async {
+  Future<void> showRewardAds() async {
     try {
-      await RewardedInterstitialAd.load(
-        adUnitId: "",
-        request: const AdRequest(),
-        rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
-          onAdLoaded: (ad) {
-            _rewardedInterstitialAd = ad;
-          },
-          onAdFailedToLoad: (error) {
-            log('RewardedInterAd failed to load: $error');
-          },
-        ),
-      );
+      EasyAds.instance.showAd(AdUnitType.rewarded);
     } catch (e) {
       log(e.toString());
-    }
-  }
-
-  Future<void> showRewardInterstitialAds(
-      {required Function(int rewards) onRewarded}) async {
-    try {
-      if (_rewardedInterstitialAd != null) {
-        await _rewardedInterstitialAd?.show(
-          onUserEarnedReward: (ad, reward) {
-            onRewarded(reward.amount.toInt());
-            preloadRewardInterAds();
-          },
-        );
-      } else {
-        await preloadRewardInterAds();
-      }
-    } catch (e) {
-      log(e.toString());
-    }
-  }
-
-  Future<void> showRewardAds(
-      {required Function(int rewards) onRewarded}) async {
-    try {
-      await RewardedAd.load(
-          adUnitId: _adConfig.rewardId,
-          request: const AdRequest(),
-          rewardedAdLoadCallback: RewardedAdLoadCallback(
-            onAdLoaded: (ad) {
-              ad.show(
-                onUserEarnedReward: (ad, reward) {
-                  onRewarded(reward.amount.toInt());
-                },
-              );
-            },
-            onAdFailedToLoad: (error) {
-              log('RewardedAd failed to load: $error');
-            },
-          ));
-    } catch (e) {
-      log(e.toString());
-    }
-  }
-
-  Future<void> loadBannerAds({
-    required Function(BannerAd bannerAd) onAdLoaded,
-  }) async {
-    try {
-      await BannerAd(
-        adUnitId: _adConfig.bannerId,
-        size: AdSize.banner,
-        request: const AdRequest(),
-        listener: BannerAdListener(
-          onAdFailedToLoad: (ad, error) {
-            log('BannerAds failed to load: $error');
-          },
-          onAdLoaded: (ad) {
-            onAdLoaded(ad as BannerAd);
-          },
-        ),
-      ).load();
-    } catch (e) {
-      log(e.toString());
-    }
-  }
-
-  Future<void> preLoadOpenAds(
-      {bool showAfterLoaded = false, VoidCallback? onAdDimissed}) async {
-// Open Ad
-    try {
-      await AppOpenAd.load(
-        adUnitId: _adConfig.appOpenId,
-        request: const AdRequest(),
-        adLoadCallback: AppOpenAdLoadCallback(
-          onAdLoaded: (ad) {
-            _appOpenAd = ad;
-            if (showAfterLoaded) {
-              showAppOpenAd(onAdDimissed: onAdDimissed);
-            }
-            onAdDimissed != null ? onAdDimissed() : null;
-          },
-          onAdFailedToLoad: (LoadAdError error) {
-            log('OpenAds failed to load: $error');
-            onAdDimissed != null ? onAdDimissed() : null;
-          },
-        ),
-        orientation: AppOpenAd.orientationPortrait,
-      );
-    } catch (e) {
-      log(e.toString());
-      onAdDimissed != null ? onAdDimissed() : null;
     }
   }
 
   init({
     required AdConfig adConfig,
     AdLimitation? adLimitation,
+    AdmobEventListener? admobEventListener,
   }) async {
     _adConfig = adConfig;
     if (adLimitation != null) {
@@ -198,30 +62,62 @@ class AdmobKit {
         init(adConfig: _adConfig);
       }
     });
-    await MobileAds.instance.initialize();
+    await EasyAds.instance.initialize(
+      AdIdManager(adConfig: adConfig),
+      adMobAdRequest: const AdRequest(),
+      fbTestMode: kDebugMode,
+    );
+    EasyAds.instance.onEvent.listen((event) {
+      switch (event.adUnitType) {
+        case AdUnitType.appOpen:
+          _admobEventListener?.onOpenAdEvent(event.type);
+          break;
+        case AdUnitType.banner:
+          _admobEventListener?.onBannerAdEvent(event.type);
+          break;
+        case AdUnitType.interstitial:
+          _admobEventListener?.onInterstitialAdEvent(event.type);
+          break;
+        case AdUnitType.rewarded:
+          _admobEventListener?.onRewardAdEvent(event.type);
+          break;
+        default:
+      }
+    });
   }
 
-  Future<void> showAppOpenAd(
-      {bool forceShow = false, VoidCallback? onAdDimissed}) async {
+  Future<void> showAppOpenAd() async {
     try {
       log('showAppOpenAd', name: 'AdmobKit');
-      if (_appOpenAd == null || forceShow) {
-        await preLoadOpenAds(showAfterLoaded: true, onAdDimissed: onAdDimissed);
-        return;
-      }
-      _appOpenAd?.fullScreenContentCallback = FullScreenContentCallback(
-        onAdFailedToShowFullScreenContent: (ad, error) {
-          onAdDimissed != null ? onAdDimissed() : null;
-        },
-        onAdDismissedFullScreenContent: (ad) {
-          preLoadOpenAds();
-          onAdDimissed != null ? onAdDimissed() : null;
-        },
-      );
-      await _appOpenAd?.show();
+      EasyAds.instance.showAd(AdUnitType.appOpen);
       AnalyticKit().logEvent(name: AnalyticEvent.showOpenAds);
     } catch (e) {
       log(e.toString(), name: "AdmobKit");
     }
   }
+}
+
+class AdIdManager extends IAdIdManager {
+  const AdIdManager({
+    required this.adConfig,
+  });
+
+  final AdConfig adConfig;
+
+  @override
+  AppAdIds? get admobAdIds => AppAdIds(
+        appId: adConfig.adId,
+        appOpenId: adConfig.appOpenId,
+        bannerId: adConfig.bannerId,
+        interstitialId: adConfig.interstitialId,
+      );
+
+  @override
+  AppAdIds? get appLovinAdIds => null;
+
+  @override
+  AppAdIds? get fbAdIds => null;
+
+  @override
+  AppAdIds? get unityAdIds => null;
 }

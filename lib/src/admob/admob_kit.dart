@@ -11,10 +11,17 @@ class AdmobKit extends IAdIdManager {
   factory AdmobKit() => _instance;
 
   late AdConfig _adConfig;
+  EasyAdBase? bannerAd;
 
   EasyBannerAd createBannerAd() {
     return const EasyBannerAd(
         adNetwork: AdNetwork.admob, adSize: AdSize.fullBanner);
+  }
+
+  Future<void> preloadBannerAd() async {
+    bannerAd = EasyAds.instance
+        .createBanner(adNetwork: AdNetwork.admob, adSize: AdSize.banner);
+    await bannerAd?.load();
   }
 
   Future<void> showInterstitialAd({
@@ -59,18 +66,12 @@ class AdmobKit extends IAdIdManager {
   }) async {
     try {
       _adConfig = adConfig;
-      Connectivity()
-          .onConnectivityChanged
-          .listen((ConnectivityResult result) async {
-        if (result != ConnectivityResult.none) {
-          init(adConfig: _adConfig);
-        }
-      });
       await EasyAds.instance.initialize(
         this,
         adMobAdRequest: const AdRequest(),
         fbTestMode: kDebugMode,
       );
+      await preloadBannerAd();
       EasyAds.instance.onEvent.listen((event) {
         switch (event.adUnitType) {
           case AdUnitType.appOpen:
@@ -96,7 +97,7 @@ class AdmobKit extends IAdIdManager {
   Future<void> showAppOpenAd() async {
     try {
       log('showAppOpenAd', name: 'AdmobKit');
-      EasyAds.instance.showAd(AdUnitType.appOpen);
+      EasyAds.instance.showAd(AdUnitType.appOpen, delayInSeconds: 0);
       AnalyticKit().logEvent(name: AnalyticEvent.showOpenAds);
     } catch (e) {
       log(e.toString(), name: "AdmobKit");

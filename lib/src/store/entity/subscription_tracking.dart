@@ -19,6 +19,9 @@ class SubscriptionTracking {
       'value': value,
       'criteria': criteria,
     };
+    params.forEach((key, value) {
+      data[key] = value;
+    });
     return data;
   }
 
@@ -29,12 +32,21 @@ class SubscriptionTracking {
     String? criteria,
     Map<String, dynamic>? params,
   }) {
-    this.screenName = screenName ?? this.screenName;
-    this.productId = productId ?? this.productId;
-    this.value = value ?? this.value;
-    this.criteria = criteria ?? "";
-    this.params = params ?? {};
-
+    if (screenName != null) {
+      this.screenName = screenName;
+    }
+    if (productId != null) {
+      this.productId = productId;
+    }
+    if (value != null) {
+      this.value = value;
+    }
+    if (criteria != null) {
+      this.criteria = criteria;
+    }
+    if (params != null) {
+      this.params = params;
+    }
     log("tracking updated:${toMap()}", name: "SubscriptionTracking");
   }
 }

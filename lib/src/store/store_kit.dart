@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 import 'package:base_kits/base_kits.dart';
 import 'package:base_kits/src/local/local_storage.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
@@ -29,7 +31,8 @@ class StoreKit {
         try {
           log('Got value from purchase stream', name: 'StoreKit');
           // Complete purchase
-          for (var purchase in listPurchaseDetails) {
+          for (var i = 0; i < listPurchaseDetails.length; i++) {
+            final purchase = listPurchaseDetails[i];
             if (purchase.pendingCompletePurchase &&
                 (purchase.status == PurchaseStatus.restored ||
                     purchase.status == PurchaseStatus.purchased)) {
@@ -40,7 +43,7 @@ class StoreKit {
           // Purchase cancel
           final cancelPurchaseDetail = listPurchaseDetails
               .firstWhereOrNull((e) => e.status == PurchaseStatus.canceled);
-          if (cancelPurchaseDetail != null) {
+          if (cancelPurchaseDetail != null && Platform.isIOS) {
             AnalyticKit().logEvent(name: AnalyticEvent.purchaseCancel);
             await InAppPurchase.instance.completePurchase(cancelPurchaseDetail);
           }
@@ -60,20 +63,25 @@ class StoreKit {
             log('Successfully restored/purchase purchase!!!: ${successfullPurchaseDetail.purchaseID}',
                 name: 'StoreKit');
             // Analytic
-            SubscriptionTracking().update(
-              value: listProductDetails
-                  .firstWhereOrNull(
-                      (e) => e.id == successfullPurchaseDetail.productID)
-                  ?.rawPrice,
-              productId: successfullPurchaseDetail.productID,
-            );
-
-            AnalyticKit().logEvent(
-              name: successfullPurchaseDetail.status == PurchaseStatus.purchased
-                  ? AnalyticEvent.purchaseSuccess
-                  : AnalyticEvent.purchaseRestore,
-              params: SubscriptionTracking().toMap(),
-            );
+            if (successfullPurchaseDetail.status == PurchaseStatus.purchased) {
+              FirebaseAnalytics.instance.logPurchase(
+                value: SubscriptionTracking().value,
+                currency: SubscriptionTracking().currency,
+              );
+            } else if (successfullPurchaseDetail.status ==
+                PurchaseStatus.restored) {
+              SubscriptionTracking().update(
+                value: listProductDetails
+                    .firstWhereOrNull(
+                        (e) => e.id == successfullPurchaseDetail.productID)
+                    ?.rawPrice,
+                productId: successfullPurchaseDetail.productID,
+              );
+              AnalyticKit().logEvent(
+                name: AnalyticEvent.purchaseRestore,
+                params: SubscriptionTracking().toMap(),
+              );
+            }
             // Notify
             premiumPublishSub.add(true);
             // Save to local purchase
@@ -138,11 +146,13 @@ class StoreKit {
         final completer = Completer();
         Timer.periodic(const Duration(seconds: 1), (timer) {
           if (timer.tick == 10 && !_isSuccessfullyRestored) {
+            FirebaseAnalytics.instance.logEvent(name: "restore_failed");
             onTimeOut != null ? onTimeOut() : null;
             completer.complete();
             timer.cancel();
           }
           if (_isSuccessfullyRestored) {
+            FirebaseAnalytics.instance.logEvent(name: "restore_success");
             onSuccessfullyRestored != null ? onSuccessfullyRestored() : null;
             timer.cancel();
             completer.complete();

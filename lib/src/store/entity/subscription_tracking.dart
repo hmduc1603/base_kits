@@ -10,6 +10,7 @@ class SubscriptionTracking {
   String productId = '';
   double value = 0;
   String criteria = '';
+  String currency = '';
   Map<String, dynamic> params = {};
 
   Map<String, dynamic> toMap() {
@@ -18,6 +19,7 @@ class SubscriptionTracking {
       'productId': productId,
       'value': value,
       'criteria': criteria,
+      'currency': currency,
     };
     params.forEach((key, value) {
       data[key] = value;
@@ -30,6 +32,7 @@ class SubscriptionTracking {
     String? productId,
     double? value,
     String? criteria,
+    String? currency,
     Map<String, dynamic>? params,
   }) {
     if (screenName != null) {
@@ -46,6 +49,9 @@ class SubscriptionTracking {
     }
     if (params != null) {
       this.params = params;
+    }
+    if (currency != null) {
+      this.currency = currency;
     }
     log("tracking updated:${toMap()}", name: "SubscriptionTracking");
   }

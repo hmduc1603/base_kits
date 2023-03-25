@@ -15,7 +15,6 @@ export 'src/store/entity/local_purchase_entity.dart';
 export 'src/rating/rating_manager.dart';
 export 'src/store/entity/subscription_tracking.dart';
 export '/src/support/support_manager.dart';
-export 'package:flutter_email_sender/flutter_email_sender.dart';
 export 'src/admob/admob_event_listener.dart';
 export 'package:easy_ads_flutter/src/enums/ad_event_type.dart';
 export 'src/admob/widgets/preloaded_banner_ad.dart';

@@ -1,6 +1,7 @@
 # This is a generated file; do not edit or check into version control.
 applovin_max=/Users/admin/.pub-cache/hosted/pub.dev/applovin_max-2.4.4/
 connectivity_plus=/Users/admin/.pub-cache/hosted/pub.dev/connectivity_plus-3.0.3/
+device_info_plus=/Users/admin/.pub-cache/hosted/pub.dev/device_info_plus-7.0.1/
 easy_audience_network=/Users/admin/.pub-cache/hosted/pub.dev/easy_audience_network-0.0.6/
 firebase_analytics=/Users/admin/.pub-cache/hosted/pub.dev/firebase_analytics-10.1.4/
 firebase_analytics_web=/Users/admin/.pub-cache/hosted/pub.dev/firebase_analytics_web-0.5.1+12/
@@ -15,6 +16,7 @@ in_app_purchase=/Users/admin/.pub-cache/hosted/pub.dev/in_app_purchase-3.1.5/
 in_app_purchase_android=/Users/admin/.pub-cache/hosted/pub.dev/in_app_purchase_android-0.2.4+2/
 in_app_purchase_storekit=/Users/admin/.pub-cache/hosted/pub.dev/in_app_purchase_storekit-0.3.6+1/
 in_app_review=/Users/admin/.pub-cache/hosted/pub.dev/in_app_review-2.0.6/
+package_info_plus=/Users/admin/.pub-cache/hosted/pub.dev/package_info_plus-3.0.3/
 path_provider=/Users/admin/.pub-cache/hosted/pub.dev/path_provider-2.0.13/
 path_provider_android=/Users/admin/.pub-cache/hosted/pub.dev/path_provider_android-2.0.23/
 path_provider_foundation=/Users/admin/.pub-cache/hosted/pub.dev/path_provider_foundation-2.1.2/

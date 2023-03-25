@@ -14,7 +14,6 @@ class StoreKit {
   factory StoreKit() => _instance;
 
   List<ProductDetails> listProductDetails = [];
-  Timer? _restoringTimeOutTimer;
   bool _isSuccessfullyRestored = false;
 
   final premiumPublishSub = PublishSubject<bool>();
@@ -29,7 +28,6 @@ class StoreKit {
           .listen((List<PurchaseDetails> listPurchaseDetails) async {
         try {
           log('Got value from purchase stream', name: 'StoreKit');
-          _restoringTimeOutTimer?.cancel();
           // Complete purchase
           for (var purchase in listPurchaseDetails) {
             if (purchase.pendingCompletePurchase &&
@@ -111,14 +109,14 @@ class StoreKit {
 
   bool get hasLocalPurchase => LocalStorage().lastLocalPurchase != null;
 
-  Future<void> restorePurchase(
-      {bool enableTimeOut = false, VoidCallback? onTimeOut}) async {
-    if (kDebugMode) {
-      log("SET PREMIMUM = FALSE (DEBUG)");
-      return;
-    }
+  Future<void> restorePurchase({
+    bool enableTimeOut = false,
+    VoidCallback? onTimeOut,
+    VoidCallback? onSuccessfullyRestored,
+  }) async {
+    _isSuccessfullyRestored = false;
     final lastPurchase = LocalStorage().lastLocalPurchase;
-    if (lastPurchase != null && kReleaseMode) {
+    if (lastPurchase != null) {
       final isOutdated = _isPurchaseOutdated(
           lastPurchase.purchasedDateInMillisecond.toString(),
           lastPurchase.productId);
@@ -127,6 +125,7 @@ class StoreKit {
             name: 'StoreKit');
         // Notify
         premiumPublishSub.add(true);
+        onSuccessfullyRestored != null ? onSuccessfullyRestored() : null;
         return;
       }
     }
@@ -137,15 +136,15 @@ class StoreKit {
           .catchError((e, s) => FirebaseCrashlytics.instance.recordError(e, s));
       if (enableTimeOut) {
         final completer = Completer();
-        _restoringTimeOutTimer =
-            Timer.periodic(const Duration(seconds: 1), (timer) {
+        Timer.periodic(const Duration(seconds: 1), (timer) {
           if (timer.tick == 10 && !_isSuccessfullyRestored) {
-            _restoringTimeOutTimer?.cancel();
             onTimeOut != null ? onTimeOut() : null;
             completer.complete();
+            timer.cancel();
           }
           if (_isSuccessfullyRestored) {
-            _restoringTimeOutTimer?.cancel();
+            onSuccessfullyRestored != null ? onSuccessfullyRestored() : null;
+            timer.cancel();
             completer.complete();
           }
         });

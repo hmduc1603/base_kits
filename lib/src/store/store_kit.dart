@@ -60,6 +60,13 @@ class StoreKit {
           );
           if (successfullPurchaseDetail != null) {
             _isSuccessfullyRestored = true;
+            SubscriptionTracking().update(
+              value: listProductDetails
+                  .firstWhereOrNull(
+                      (e) => e.id == successfullPurchaseDetail.productID)
+                  ?.rawPrice,
+              productId: successfullPurchaseDetail.productID,
+            );
             log('Successfully restored/purchase purchase!!!: ${successfullPurchaseDetail.purchaseID}',
                 name: 'StoreKit');
             // Analytic
@@ -68,15 +75,12 @@ class StoreKit {
                 value: SubscriptionTracking().value,
                 currency: SubscriptionTracking().currency,
               );
+              AnalyticKit().logEvent(
+                name: AnalyticEvent.purchaseSuccess,
+                params: SubscriptionTracking().toMap(),
+              );
             } else if (successfullPurchaseDetail.status ==
                 PurchaseStatus.restored) {
-              SubscriptionTracking().update(
-                value: listProductDetails
-                    .firstWhereOrNull(
-                        (e) => e.id == successfullPurchaseDetail.productID)
-                    ?.rawPrice,
-                productId: successfullPurchaseDetail.productID,
-              );
               AnalyticKit().logEvent(
                 name: AnalyticEvent.purchaseRestore,
                 params: SubscriptionTracking().toMap(),

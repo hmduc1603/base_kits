@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:base_kits/base_kits.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:easy_ads_flutter/easy_ads_flutter.dart';
 import 'package:flutter/foundation.dart';
 
@@ -12,6 +11,7 @@ class AdmobKit extends IAdIdManager {
 
   late AdConfig _adConfig;
   EasyAdBase? bannerAd;
+  StreamSubscription? _openAdEventSub;
 
   EasyBannerAd createBannerAd() {
     return const EasyBannerAd(
@@ -60,45 +60,68 @@ class AdmobKit extends IAdIdManager {
     }
   }
 
+  bool isInitialize = false;
+
   init({
     required AdConfig adConfig,
     AdmobEventListener? admobEventListener,
   }) async {
     try {
       _adConfig = adConfig;
-      await EasyAds.instance.initialize(
-        this,
-        adMobAdRequest: const AdRequest(),
-        fbTestMode: kDebugMode,
-      );
+      if (!isInitialize) {
+        await EasyAds.instance.initialize(
+          this,
+          adMobAdRequest: const AdRequest(),
+          fbTestMode: kDebugMode,
+        );
+        EasyAds.instance.onEvent.listen((event) {
+          switch (event.adUnitType) {
+            case AdUnitType.appOpen:
+              admobEventListener?.onOpenAdEvent(event.type);
+              break;
+            case AdUnitType.banner:
+              admobEventListener?.onBannerAdEvent(event.type);
+              break;
+            case AdUnitType.interstitial:
+              admobEventListener?.onInterstitialAdEvent(event.type);
+              break;
+            case AdUnitType.rewarded:
+              admobEventListener?.onRewardAdEvent(event.type);
+              break;
+            default:
+          }
+        });
+      }
       await preloadBannerAd();
-      EasyAds.instance.onEvent.listen((event) {
-        switch (event.adUnitType) {
-          case AdUnitType.appOpen:
-            admobEventListener?.onOpenAdEvent(event.type);
-            break;
-          case AdUnitType.banner:
-            admobEventListener?.onBannerAdEvent(event.type);
-            break;
-          case AdUnitType.interstitial:
-            admobEventListener?.onInterstitialAdEvent(event.type);
-            break;
-          case AdUnitType.rewarded:
-            admobEventListener?.onRewardAdEvent(event.type);
-            break;
-          default:
-        }
-      });
+      isInitialize = true;
     } catch (e) {
       log(e.toString(), name: "AdmobKit");
     }
   }
 
-  Future<void> showAppOpenAd() async {
+  showAppOpenAd({Function(bool couldShow)? onComplete}) {
+    if (_openAdEventSub != null) {
+      onComplete != null ? onComplete(false) : null;
+      return;
+    }
     try {
       log('showAppOpenAd', name: 'AdmobKit');
-      EasyAds.instance.showAd(AdUnitType.appOpen, delayInSeconds: 0);
       AnalyticKit().logEvent(name: AnalyticEvent.showOpenAds);
+      EasyAds.instance.showAd(AdUnitType.appOpen, delayInSeconds: 0);
+      _openAdEventSub = EasyAds.instance.onEvent.listen((event) {
+        if (event.adUnitType == AdUnitType.appOpen) {
+          _openAdEventSub?.cancel();
+          _openAdEventSub == null;
+          switch (event.type) {
+            case AdEventType.adDismissed:
+              onComplete != null ? onComplete(true) : null;
+              break;
+            default:
+              onComplete != null ? onComplete(false) : null;
+              break;
+          }
+        }
+      });
     } catch (e) {
       log(e.toString(), name: "AdmobKit");
     }

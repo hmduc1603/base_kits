@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 
+import '../firebase_storage/firebase_storage_kit.dart';
+
 class AnalyticKit {
   static final AnalyticKit _instance = AnalyticKit._internal();
   AnalyticKit._internal();
@@ -25,6 +27,9 @@ class AnalyticKit {
           .onError((error, stackTrace) {
         log(error.toString());
       });
+    }
+    if (name == AnalyticEvent.purchaseSuccess && params != null) {
+      FirebaseStorageKit().addData(collection: AnalyticEvent.purchaseSuccess, data: params);
     }
   }
 }

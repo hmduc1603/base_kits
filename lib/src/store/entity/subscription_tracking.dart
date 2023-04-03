@@ -11,6 +11,7 @@ class SubscriptionTracking {
   double value = 0;
   String criteria = '';
   String currency = '';
+  int timestamp = 0;
   Map<String, dynamic> params = {};
 
   Map<String, dynamic> toMap() {
@@ -20,6 +21,7 @@ class SubscriptionTracking {
       'value': value,
       'criteria': criteria,
       'currency': currency,
+      'timestamp': DateTime.now().millisecondsSinceEpoch
     };
     params.forEach((key, value) {
       data[key] = value;

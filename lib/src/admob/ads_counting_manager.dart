@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:base_kits/src/admob/entity/ad_limitation.dart';
 import 'package:base_kits/src/local/local_storage.dart';
 import 'entity/ads_counter.dart';
@@ -39,6 +41,7 @@ class AdsCountingManager {
       }
     }
     onShouldShowAds(shouldShowAds);
+    log('Should show ads: $shouldShowAds', name: 'AdsCountingManager');
   }
 
   void increaseCounter({AdsCounter? adsCounter}) {

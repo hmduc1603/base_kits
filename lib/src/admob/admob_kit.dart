@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../base_kits.dart';
+import 'ads_counting_manager.dart';
 
 class AdmobKit {
   static final AdmobKit _instance = AdmobKit._internal();
@@ -63,7 +65,7 @@ class AdmobKit {
     }
   }
 
-  setupAdLimitation(
+  _setupAdLimitation(
     AdLimitation? adLimitation,
   ) {
     if (adLimitation != null) {
@@ -71,32 +73,49 @@ class AdmobKit {
     }
   }
 
-  init(AdConfig adConfig) async {
+  init(AdConfig adConfig, {AdLimitation? adLimitation}) async {
     _adConfig = adConfig;
+    _setupAdLimitation(adLimitation);
     await MobileAds.instance.initialize();
     await _loadOpenAds();
     log('Completed initializing', name: 'AdmobService');
   }
 
-  Future<void> showInterstitialAd({Function(bool didShow)? onComplete}) async {
-    log('showInterstitialAd', name: 'AdmobService');
-    if (_interstitialAd == null) {
-      await _loadIntersitial();
-    }
-    _interstitialAd?.fullScreenContentCallback = FullScreenContentCallback(
-      onAdDismissedFullScreenContent: (InterstitialAd ad) {
-        onComplete != null ? onComplete(true) : null;
-        _interstitialAd?.dispose();
-        _interstitialAd = null;
-      },
-      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-        onComplete != null ? onComplete(false) : null;
-        _interstitialAd?.dispose();
-        _interstitialAd = null;
+  void showInterstitialAd(
+      {Function(bool didShow)? onComplete, VoidCallback? onReachLimit}) {
+    AdsCountingManager().checkShouldShowAds(
+      onShouldShowAds: (shouldShowAds) async {
+        if (shouldShowAds) {
+          log('showInterstitialAd', name: 'AdmobService');
+          if (_interstitialAd == null) {
+            await _loadIntersitial();
+          }
+          _interstitialAd?.fullScreenContentCallback =
+              FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (InterstitialAd ad) {
+              onComplete != null ? onComplete(true) : null;
+              _interstitialAd?.dispose();
+              _interstitialAd = null;
+            },
+            onAdFailedToShowFullScreenContent:
+                (InterstitialAd ad, AdError error) {
+              onComplete != null ? onComplete(false) : null;
+              _interstitialAd?.dispose();
+              _interstitialAd = null;
+            },
+          );
+          await _interstitialAd?.show();
+          if (_interstitialAd == null) {
+            onComplete != null ? onComplete(false) : null;
+          } else {
+            AnalyticKit().logEvent(name: AnalyticEvent.showInterstitial);
+          }
+        } else {
+          onReachLimit != null ? onReachLimit() : null;
+          onComplete != null ? onComplete(false) : null;
+        }
       },
     );
-    await _interstitialAd?.show();
-    AnalyticKit().logEvent(name: AnalyticEvent.showInterstitial);
   }
 
   Future<void> showAppOpenAd({Function(bool didShow)? onComplete}) async {
@@ -117,7 +136,11 @@ class AdmobKit {
       },
     );
     await _appOpenAd?.show();
-    AnalyticKit().logEvent(name: AnalyticEvent.showOpenAds);
+    if (_appOpenAd == null) {
+      onComplete != null ? onComplete(false) : null;
+    } else {
+      AnalyticKit().logEvent(name: AnalyticEvent.showOpenAds);
+    }
   }
 
   Future<void> forceShowAppOpenAds() async {

@@ -34,7 +34,7 @@ class RatingManager {
 
   static const _afterNDay = 3;
 
-  void requestRating() async {
+  Future<void> requestRating() async {
     try {
       if (!await _inAppReview.isAvailable()) {
         return;

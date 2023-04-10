@@ -70,21 +70,24 @@ class StoreKit {
             log('Successfully restored/purchase purchase!!!: ${successfullPurchaseDetail.purchaseID}',
                 name: 'StoreKit');
             // Analytic
-            if (successfullPurchaseDetail.status == PurchaseStatus.purchased) {
-              FirebaseAnalytics.instance.logPurchase(
-                value: SubscriptionTracking().value,
-                currency: SubscriptionTracking().currency,
-              );
-              AnalyticKit().logEvent(
-                name: AnalyticEvent.purchaseSuccess,
-                params: SubscriptionTracking().toMap(),
-              );
-            } else if (successfullPurchaseDetail.status ==
-                PurchaseStatus.restored) {
-              AnalyticKit().logEvent(
-                name: AnalyticEvent.purchaseRestore,
-                params: SubscriptionTracking().toMap(),
-              );
+            if (kReleaseMode) {
+              if (successfullPurchaseDetail.status ==
+                  PurchaseStatus.purchased) {
+                FirebaseAnalytics.instance.logPurchase(
+                  value: SubscriptionTracking().value,
+                  currency: SubscriptionTracking().currency,
+                );
+                AnalyticKit().logEvent(
+                  name: AnalyticEvent.purchaseSuccess,
+                  params: SubscriptionTracking().toMap(),
+                );
+              } else if (successfullPurchaseDetail.status ==
+                  PurchaseStatus.restored) {
+                AnalyticKit().logEvent(
+                  name: AnalyticEvent.purchaseRestore,
+                  params: SubscriptionTracking().toMap(),
+                );
+              }
             }
             // Notify
             premiumPublishSub.add(true);

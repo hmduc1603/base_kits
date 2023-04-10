@@ -9,10 +9,12 @@ class FirebaseStorageKit {
 
   Future<void> addData(
       {required String collection, required Map<String, dynamic> data}) {
+    final adjustedData = data;
+    adjustedData["created_date"] = DateTime.now();
     final CollectionReference collectionRef =
         FirebaseFirestore.instance.collection(collection);
     return collectionRef
-        .add(data)
+        .add(adjustedData)
         .then((value) => log("addData ", name: "FirebaseStorageKit"))
         .catchError((error) =>
             log("Failed to add user: $error", name: "FirebaseStorageKit"));

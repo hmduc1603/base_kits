@@ -23,6 +23,9 @@ class AdsCountingManager {
     final adsCounter = LocalStorage().adsCounter;
     if (adsCounter == null) {
       increaseCounter();
+      if (adLimitation.dailyLimitation > 0) {
+        shouldShowAds = true;
+      }
     } else {
       if (adsCounter.updatedDate.day == DateTime.now().day) {
         if (adsCounter.adsCounting < adLimitation.dailyLimitation) {

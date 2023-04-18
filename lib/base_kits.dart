@@ -14,6 +14,7 @@ export 'src/store/entity/local_purchase_entity.dart';
 export 'src/rating/rating_manager.dart';
 export 'src/store/entity/subscription_tracking.dart';
 export '/src/support/support_manager.dart';
+export '/src/admob/widgets/banner_ad_widget.dart';
 
 class BaseKits {
   static final BaseKits _instance = BaseKits._internal();

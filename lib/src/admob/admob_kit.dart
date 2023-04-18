@@ -1,10 +1,14 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:async';
 import 'dart:developer';
+import 'package:base_kits/src/admob/entity/banner_ad_entity.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../base_kits.dart';
 import 'ads_counting_manager.dart';
+import 'package:collection/collection.dart';
 
 class AdmobKit {
   static final AdmobKit _instance = AdmobKit._internal();
@@ -14,6 +18,41 @@ class AdmobKit {
   late AdConfig _adConfig;
   InterstitialAd? _interstitialAd;
   AppOpenAd? _appOpenAd;
+  List<BannerAdEntity> bannerAds = [];
+
+  BannerAdEntity? getLoadedBannerAd() {
+    if (bannerAds.firstWhereOrNull((e) => !e.isUsed) != null) {
+      preloadBannerAd(onReceivedAd: null);
+      return bannerAds.firstWhere((e) => !e.isUsed)..isUsed = true;
+    }
+    return null;
+  }
+
+  Future<void> preloadBannerAd(
+      {required Function(BannerAd ad)? onReceivedAd}) async {
+    final completer = Completer();
+    await BannerAd(
+      adUnitId: _adConfig.bannerId,
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          onReceivedAd != null
+              ? onReceivedAd(ad as BannerAd)
+              : bannerAds.add(BannerAdEntity(ad: ad as BannerAd));
+          completer.complete();
+          log('BannerAd is Loaded!!!', name: "AdmobKit");
+        },
+        onAdFailedToLoad: (ad, error) {
+          // Releases an ad resource when it fails to load
+          ad.dispose();
+          completer.complete();
+          log('BannerAd failed to load: $error', name: "AdmobKit");
+        },
+      ),
+    ).load();
+    await completer.future;
+  }
 
   Future<void> _loadIntersitial() async {
     // InterstitialAd
@@ -27,9 +66,10 @@ class AdmobKit {
               // Keep a reference to the ad so you can show it later.
               _interstitialAd = ad;
               completer.complete();
+              log('InterstitialAd is Loaded!!!', name: "AdmobKit");
             },
             onAdFailedToLoad: (LoadAdError error) {
-              log('InterstitialAd failed to load: $error');
+              log('InterstitialAd failed to load: $error', name: "AdmobKit");
               completer.complete();
             },
           ));
@@ -50,9 +90,10 @@ class AdmobKit {
           onAdLoaded: (ad) {
             _appOpenAd = ad;
             completer.complete();
+            log('OpenAd is Loaded!!!', name: "AdmobKit");
           },
           onAdFailedToLoad: (LoadAdError error) {
-            log('OpenAds failed to load: $error');
+            log('OpenAds failed to load: $error', name: "AdmobKit");
             completer.complete();
           },
         ),
@@ -78,7 +119,7 @@ class AdmobKit {
     _setupAdLimitation(adLimitation);
     await MobileAds.instance.initialize();
     await _loadOpenAds();
-    log('Completed initializing', name: 'AdmobService');
+    log('Completed initializing', name: 'AdmobKit');
   }
 
   void showInterstitialAd(
@@ -86,7 +127,7 @@ class AdmobKit {
     AdsCountingManager().checkShouldShowAds(
       onShouldShowAds: (shouldShowAds) async {
         if (shouldShowAds) {
-          log('showInterstitialAd', name: 'AdmobService');
+          log('showInterstitialAd', name: 'AdmobKit');
           if (_interstitialAd == null) {
             await _loadIntersitial();
           }
@@ -119,7 +160,7 @@ class AdmobKit {
   }
 
   Future<void> showAppOpenAd({Function(bool didShow)? onComplete}) async {
-    log('showAppOpenAd', name: 'AdmobService');
+    log('showAppOpenAd', name: 'AdmobKit');
     if (_appOpenAd == null) {
       await _loadOpenAds();
     }
@@ -153,7 +194,7 @@ class AdmobKit {
             ad.show();
           },
           onAdFailedToLoad: (LoadAdError error) {
-            log('OpenAds failed to load: $error');
+            log('OpenAds failed to load: $error', name: "AdmobKit");
           },
         ),
         orientation: AppOpenAd.orientationPortrait,
@@ -173,7 +214,7 @@ class AdmobKit {
               ad.show();
             },
             onAdFailedToLoad: (LoadAdError error) {
-              log('InterstitialAd failed to load: $error');
+              log('InterstitialAd failed to load: $error', name: "AdmobKit");
             },
           ));
     } catch (e, s) {

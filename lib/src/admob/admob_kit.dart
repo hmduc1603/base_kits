@@ -83,7 +83,7 @@ class AdmobKit {
     }
   }
 
-  Future<void> _loadOpenAds() async {
+  Future<void> preloadOpenAds() async {
     final completer = Completer();
     try {
       await AppOpenAd.load(
@@ -121,7 +121,7 @@ class AdmobKit {
     _adConfig = adConfig;
     _setupAdLimitation(adLimitation);
     await MobileAds.instance.initialize();
-    await _loadOpenAds();
+    await preloadOpenAds();
     log('Completed initializing', name: 'AdmobKit');
   }
 
@@ -165,7 +165,7 @@ class AdmobKit {
   Future<void> showAppOpenAd({Function(bool didShow)? onComplete}) async {
     log('showAppOpenAd', name: 'AdmobKit');
     if (_appOpenAd == null) {
-      await _loadOpenAds();
+      await preloadOpenAds();
     }
     _appOpenAd?.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (AppOpenAd ad) {

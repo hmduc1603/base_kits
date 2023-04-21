@@ -27,7 +27,16 @@ class _BannerAdWidgetState extends State<AdmobServiceBannerAdWidget> {
   @override
   Widget build(BuildContext context) {
     if (ad == null) {
-      return const SizedBox();
+      return FutureBuilder(
+          future: Future.delayed(const Duration(seconds: 5)),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return const SizedBox();
+            }
+            return const SizedBox(
+              height: 72.0,
+            );
+          });
     }
     return Container(
       width: double.infinity,

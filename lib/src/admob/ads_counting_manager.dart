@@ -10,8 +10,8 @@ class AdsCountingManager {
   factory AdsCountingManager() => _instance;
 
   int count = 0;
-  late AdLimitation _adLimitation;
-  AdLimitation get adLimitation => _adLimitation;
+  AdLimitation? _adLimitation;
+  AdLimitation? get adLimitation => _adLimitation;
 
   setUpLimitation(AdLimitation adLimitation) {
     _adLimitation = adLimitation;
@@ -19,17 +19,21 @@ class AdsCountingManager {
 
   void checkShouldShowAds(
       {required Function(bool shouldShowAds) onShouldShowAds}) {
+    if (_adLimitation == null) {
+      onShouldShowAds(false);
+      return;
+    }
     bool shouldShowAds = false;
     final adsCounter = LocalStorage().adsCounter;
     if (adsCounter == null) {
       increaseCounter();
-      if (adLimitation.dailyLimitation > 0) {
+      if (adLimitation!.dailyLimitation > 0) {
         shouldShowAds = true;
       }
     } else {
       if (adsCounter.updatedDate.day == DateTime.now().day) {
-        if (adsCounter.adsCounting < adLimitation.dailyLimitation) {
-          if (count == 0 || count % adLimitation.showAfterEveryNumber == 0) {
+        if (adsCounter.adsCounting < adLimitation!.dailyLimitation) {
+          if (count == 0 || count % adLimitation!.showAfterEveryNumber == 0) {
             shouldShowAds = true;
             increaseCounter(adsCounter: adsCounter);
           }

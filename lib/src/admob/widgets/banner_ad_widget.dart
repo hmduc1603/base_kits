@@ -14,18 +14,13 @@ class _BannerAdWidgetState extends State<AdmobServiceBannerAdWidget> {
 
   @override
   void initState() {
-    setState(() {
-      ad = AdmobKit().getLoadedBannerAd();
-    });
-    if (ad == null) {
-      AdmobKit().preloadBannerAd(
-        onReceivedAd: (ad) {
-          setState(() {
-            this.ad = ad;
-          });
-        },
-      );
-    }
+    AdmobKit().preloadBannerAd(
+      onReceivedAd: (ad) {
+        setState(() {
+          this.ad = ad;
+        });
+      },
+    );
     super.initState();
   }
 

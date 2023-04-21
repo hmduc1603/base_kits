@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:developer';
-import 'package:base_kits/src/admob/entity/banner_ad_entity.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -18,12 +17,16 @@ class AdmobKit {
   late AdConfig _adConfig;
   InterstitialAd? _interstitialAd;
   AppOpenAd? _appOpenAd;
-  List<BannerAdEntity> bannerAds = [];
+  List<BannerAd> bannerAds = [];
+  List<String> usedBannerAdResponseIds = [];
 
-  BannerAdEntity? getLoadedBannerAd() {
-    if (bannerAds.firstWhereOrNull((e) => !e.isUsed) != null) {
+  BannerAd? getLoadedBannerAd() {
+    final ad = bannerAds.firstWhereOrNull(
+        (e) => !usedBannerAdResponseIds.contains(e.responseInfo?.responseId));
+    if (ad != null && ad.responseInfo?.responseId != null) {
       preloadBannerAd(onReceivedAd: null);
-      return bannerAds.firstWhere((e) => !e.isUsed)..isUsed = true;
+      usedBannerAdResponseIds.add(ad.responseInfo!.responseId!);
+      return ad;
     }
     return null;
   }
@@ -39,7 +42,7 @@ class AdmobKit {
         onAdLoaded: (ad) {
           onReceivedAd != null
               ? onReceivedAd(ad as BannerAd)
-              : bannerAds.add(BannerAdEntity(ad: ad as BannerAd));
+              : bannerAds.add(ad as BannerAd);
           completer.complete();
           log('BannerAd is Loaded!!!', name: "AdmobKit");
         },

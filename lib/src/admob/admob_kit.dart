@@ -14,7 +14,8 @@ class AdmobKit {
   AdmobKit._internal();
   factory AdmobKit() => _instance;
 
-  late AdConfig _adConfig;
+  late AdConfig adConfig;
+  late AdUnitConfig _adUnitConfig;
   InterstitialAd? _interstitialAd;
   AppOpenAd? _appOpenAd;
   List<BannerAd> bannerAds = [];
@@ -35,7 +36,7 @@ class AdmobKit {
       {required Function(BannerAd ad)? onReceivedAd}) async {
     final completer = Completer();
     await BannerAd(
-      adUnitId: _adConfig.bannerId,
+      adUnitId: _adUnitConfig.bannerId,
       size: AdSize.banner,
       request: const AdRequest(),
       listener: BannerAdListener(
@@ -62,7 +63,7 @@ class AdmobKit {
     final completer = Completer();
     try {
       await InterstitialAd.load(
-          adUnitId: _adConfig.interstitialId,
+          adUnitId: _adUnitConfig.interstitialId,
           request: const AdRequest(),
           adLoadCallback: InterstitialAdLoadCallback(
             onAdLoaded: (InterstitialAd ad) {
@@ -87,7 +88,7 @@ class AdmobKit {
     final completer = Completer();
     try {
       await AppOpenAd.load(
-        adUnitId: _adConfig.appOpenId,
+        adUnitId: _adUnitConfig.appOpenId,
         request: const AdRequest(),
         adLoadCallback: AppOpenAdLoadCallback(
           onAdLoaded: (ad) {
@@ -109,17 +110,9 @@ class AdmobKit {
     }
   }
 
-  _setupAdLimitation(
-    AdLimitation? adLimitation,
-  ) {
-    if (adLimitation != null) {
-      AdsCountingManager().setUpLimitation(adLimitation);
-    }
-  }
-
-  init(AdConfig adConfig, {AdLimitation? adLimitation}) async {
-    _adConfig = adConfig;
-    _setupAdLimitation(adLimitation);
+  init(AdConfig adConfig, AdUnitConfig adUnitConfig) async {
+    _adUnitConfig = adUnitConfig;
+    this.adConfig = adConfig;
     await MobileAds.instance.initialize();
     await preloadOpenAds();
     log('Completed initializing', name: 'AdmobKit');
@@ -190,7 +183,7 @@ class AdmobKit {
   Future<void> forceShowAppOpenAds() async {
     try {
       await AppOpenAd.load(
-        adUnitId: _adConfig.appOpenId,
+        adUnitId: _adUnitConfig.appOpenId,
         request: const AdRequest(),
         adLoadCallback: AppOpenAdLoadCallback(
           onAdLoaded: (ad) {
@@ -210,7 +203,7 @@ class AdmobKit {
   Future<void> forceShowInterstitialAds() async {
     try {
       await InterstitialAd.load(
-          adUnitId: _adConfig.interstitialId,
+          adUnitId: _adUnitConfig.interstitialId,
           request: const AdRequest(),
           adLoadCallback: InterstitialAdLoadCallback(
             onAdLoaded: (InterstitialAd ad) {

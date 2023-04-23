@@ -1,12 +1,37 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:base_kits/base_kits.dart';
 
+part 'ad_config.g.dart';
+
+@JsonSerializable()
 class AdConfig {
+  final bool enableInterstitialAd;
+  final bool enableOpenAd;
+  final bool enableBannerAd;
+  final AdLimitation adLimitation;
+  AdConfig({
+    required this.enableInterstitialAd,
+    required this.enableOpenAd,
+    required this.enableBannerAd,
+    required this.adLimitation,
+  });
+
+  factory AdConfig.fromJson(Map<String, dynamic> json) =>
+      _$AdConfigFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AdConfigToJson(this);
+}
+
+class AdUnitConfig {
   final String adId;
   final String bannerId;
   final String appOpenId;
   final String rewardId;
   final String interstitialId;
-  AdConfig({
+
+  AdUnitConfig({
     required this.bannerId,
     required this.appOpenId,
     required this.rewardId,
@@ -24,8 +49,8 @@ class AdConfig {
     };
   }
 
-  factory AdConfig.fromMap(Map<String, dynamic> map) {
-    return AdConfig(
+  factory AdUnitConfig.fromMap(Map<String, dynamic> map) {
+    return AdUnitConfig(
       bannerId: map['bannerId'] as String,
       appOpenId: map['appOpenId'] as String,
       rewardId: map['rewardId'] as String,
@@ -36,6 +61,6 @@ class AdConfig {
 
   String toJson() => json.encode(toMap());
 
-  factory AdConfig.fromJson(String source) =>
-      AdConfig.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory AdUnitConfig.fromJson(String source) =>
+      AdUnitConfig.fromMap(json.decode(source) as Map<String, dynamic>);
 }

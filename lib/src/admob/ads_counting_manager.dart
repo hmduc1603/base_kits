@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:base_kits/src/admob/entity/ad_limitation.dart';
+import 'package:base_kits/src/admob/admob_kit.dart';
 import 'package:base_kits/src/local/local_storage.dart';
 import 'entity/ads_counter.dart';
 
@@ -10,30 +10,27 @@ class AdsCountingManager {
   factory AdsCountingManager() => _instance;
 
   int count = 0;
-  AdLimitation? _adLimitation;
-  AdLimitation? get adLimitation => _adLimitation;
-
-  setUpLimitation(AdLimitation adLimitation) {
-    _adLimitation = adLimitation;
-  }
 
   void checkShouldShowAds(
       {required Function(bool shouldShowAds) onShouldShowAds}) {
-    if (_adLimitation == null) {
-      onShouldShowAds(false);
-      return;
-    }
     bool shouldShowAds = false;
     final adsCounter = LocalStorage().adsCounter;
     if (adsCounter == null) {
       increaseCounter();
-      if (adLimitation!.dailyLimitation > 0) {
+      if (AdmobKit().adConfig.adLimitation.dailyInterstitialLimitation > 0) {
         shouldShowAds = true;
       }
     } else {
       if (adsCounter.updatedDate.day == DateTime.now().day) {
-        if (adsCounter.adsCounting < adLimitation!.dailyLimitation) {
-          if (count == 0 || count % adLimitation!.showAfterEveryNumber == 0) {
+        if (adsCounter.adsCounting <
+            AdmobKit().adConfig.adLimitation.dailyInterstitialLimitation) {
+          if (count == 0 ||
+              count %
+                      AdmobKit()
+                          .adConfig
+                          .adLimitation
+                          .showInterstitialAfterEveryNumber ==
+                  0) {
             shouldShowAds = true;
             increaseCounter(adsCounter: adsCounter);
           }

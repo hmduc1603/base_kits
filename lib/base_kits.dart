@@ -15,6 +15,9 @@ export 'src/rating/rating_manager.dart';
 export 'src/store/entity/subscription_tracking.dart';
 export '/src/support/support_manager.dart';
 export '/src/admob/widgets/banner_ad_widget.dart';
+export '/src/util/form_util.dart';
+export '/src/util/number_util.dart';
+export '/src/util/string_util.dart';
 
 class BaseKits {
   static final BaseKits _instance = BaseKits._internal();

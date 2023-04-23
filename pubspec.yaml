@@ -29,6 +29,8 @@ dependencies:
   google_mobile_ads: ^2.4.0
   package_info_plus: ^3.0.3
   device_info_plus: ^7.0.0
+  number_display: ^3.0.0
+
 
 dev_dependencies:
   flutter_lints: ^2.0.0

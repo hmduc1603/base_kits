@@ -21,7 +21,7 @@ class StoreKit {
   final premiumPublishSub = PublishSubject<bool>();
   final purchase = PublishSubject<bool>();
 
-  init() async {
+  Future<void> init() async {
     // Check Store
     final bool isAvailable = await InAppPurchase.instance.isAvailable();
     // Listen to purchase

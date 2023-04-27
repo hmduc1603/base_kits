@@ -24,7 +24,7 @@ class BaseKits {
   BaseKits._internal();
   factory BaseKits() => _instance;
 
-  init() async {
+  Future<void> init() async {
     await LocalStorage().init();
   }
 }

@@ -22,40 +22,49 @@ class AdmobKit {
   List<String> usedBannerAdResponseIds = [];
 
   BannerAd? getLoadedBannerAd() {
-    final ad = bannerAds.firstWhereOrNull(
-        (e) => !usedBannerAdResponseIds.contains(e.responseInfo?.responseId));
-    if (ad != null && ad.responseInfo?.responseId != null) {
-      preloadBannerAd(onReceivedAd: null);
-      usedBannerAdResponseIds.add(ad.responseInfo!.responseId!);
-      return ad;
+    try {
+      final ad = bannerAds.firstWhereOrNull(
+          (e) => !usedBannerAdResponseIds.contains(e.responseInfo?.responseId));
+      if (ad != null && ad.responseInfo?.responseId != null) {
+        preloadBannerAd(onReceivedAd: null);
+        usedBannerAdResponseIds.add(ad.responseInfo!.responseId!);
+        return ad;
+      }
+      return null;
+    } catch (e) {
+      log(e.toString());
+      return null;
     }
-    return null;
   }
 
   Future<void> preloadBannerAd(
       {required Function(BannerAd ad)? onReceivedAd}) async {
-    final completer = Completer();
-    await BannerAd(
-      adUnitId: _adUnitConfig.bannerId,
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (ad) {
-          onReceivedAd != null
-              ? onReceivedAd(ad as BannerAd)
-              : bannerAds.add(ad as BannerAd);
-          completer.complete();
-          log('BannerAd is Loaded!!!', name: "AdmobKit");
-        },
-        onAdFailedToLoad: (ad, error) {
-          // Releases an ad resource when it fails to load
-          ad.dispose();
-          completer.complete();
-          log('BannerAd failed to load: $error', name: "AdmobKit");
-        },
-      ),
-    ).load();
-    await completer.future;
+    try {
+      final completer = Completer();
+      await BannerAd(
+        adUnitId: _adUnitConfig.bannerId,
+        size: AdSize.banner,
+        request: const AdRequest(),
+        listener: BannerAdListener(
+          onAdLoaded: (ad) {
+            onReceivedAd != null
+                ? onReceivedAd(ad as BannerAd)
+                : bannerAds.add(ad as BannerAd);
+            completer.complete();
+            log('BannerAd is Loaded!!!', name: "AdmobKit");
+          },
+          onAdFailedToLoad: (ad, error) {
+            // Releases an ad resource when it fails to load
+            ad.dispose();
+            completer.complete();
+            log('BannerAd failed to load: $error', name: "AdmobKit");
+          },
+        ),
+      ).load();
+      await completer.future;
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   Future<void> _loadIntersitial() async {
@@ -120,63 +129,73 @@ class AdmobKit {
 
   void showInterstitialAd(
       {Function(bool didShow)? onComplete, VoidCallback? onReachLimit}) {
-    AdsCountingManager().checkShouldShowAds(
-      onShouldShowAds: (shouldShowAds) async {
-        if (shouldShowAds) {
-          log('showInterstitialAd', name: 'AdmobKit');
-          if (_interstitialAd == null) {
-            await _loadIntersitial();
-          }
-          _interstitialAd?.fullScreenContentCallback =
-              FullScreenContentCallback(
-            onAdDismissedFullScreenContent: (InterstitialAd ad) {
-              onComplete != null ? onComplete(true) : null;
-              _interstitialAd?.dispose();
-              _interstitialAd = null;
-            },
-            onAdFailedToShowFullScreenContent:
-                (InterstitialAd ad, AdError error) {
+    try {
+      AdsCountingManager().checkShouldShowAds(
+        onShouldShowAds: (shouldShowAds) async {
+          if (shouldShowAds) {
+            log('showInterstitialAd', name: 'AdmobKit');
+            if (_interstitialAd == null) {
+              await _loadIntersitial();
+            }
+            _interstitialAd?.fullScreenContentCallback =
+                FullScreenContentCallback(
+              onAdDismissedFullScreenContent: (InterstitialAd ad) {
+                onComplete != null ? onComplete(true) : null;
+                _interstitialAd?.dispose();
+                _interstitialAd = null;
+              },
+              onAdFailedToShowFullScreenContent:
+                  (InterstitialAd ad, AdError error) {
+                onComplete != null ? onComplete(false) : null;
+                _interstitialAd?.dispose();
+                _interstitialAd = null;
+              },
+            );
+            await _interstitialAd?.show();
+            if (_interstitialAd == null) {
               onComplete != null ? onComplete(false) : null;
-              _interstitialAd?.dispose();
-              _interstitialAd = null;
-            },
-          );
-          await _interstitialAd?.show();
-          if (_interstitialAd == null) {
-            onComplete != null ? onComplete(false) : null;
+            } else {
+              AnalyticKit().logEvent(name: AnalyticEvent.showInterstitial);
+            }
           } else {
-            AnalyticKit().logEvent(name: AnalyticEvent.showInterstitial);
+            onReachLimit != null ? onReachLimit() : null;
+            onComplete != null ? onComplete(false) : null;
           }
-        } else {
-          onReachLimit != null ? onReachLimit() : null;
-          onComplete != null ? onComplete(false) : null;
-        }
-      },
-    );
+        },
+      );
+    } catch (e) {
+      onComplete != null ? onComplete(false) : null;
+      log(e.toString());
+    }
   }
 
   Future<void> showAppOpenAd({Function(bool didShow)? onComplete}) async {
-    log('showAppOpenAd', name: 'AdmobKit');
-    if (_appOpenAd == null) {
-      await preloadOpenAds();
-    }
-    _appOpenAd?.fullScreenContentCallback = FullScreenContentCallback(
-      onAdDismissedFullScreenContent: (AppOpenAd ad) {
-        onComplete != null ? onComplete(true) : null;
-        _appOpenAd?.dispose();
-        _appOpenAd = null;
-      },
-      onAdFailedToShowFullScreenContent: (AppOpenAd ad, AdError error) {
+    try {
+      log('showAppOpenAd', name: 'AdmobKit');
+      if (_appOpenAd == null) {
+        await preloadOpenAds();
+      }
+      _appOpenAd?.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (AppOpenAd ad) {
+          onComplete != null ? onComplete(true) : null;
+          _appOpenAd?.dispose();
+          _appOpenAd = null;
+        },
+        onAdFailedToShowFullScreenContent: (AppOpenAd ad, AdError error) {
+          onComplete != null ? onComplete(false) : null;
+          _appOpenAd?.dispose();
+          _appOpenAd = null;
+        },
+      );
+      await _appOpenAd?.show();
+      if (_appOpenAd == null) {
         onComplete != null ? onComplete(false) : null;
-        _appOpenAd?.dispose();
-        _appOpenAd = null;
-      },
-    );
-    await _appOpenAd?.show();
-    if (_appOpenAd == null) {
+      } else {
+        AnalyticKit().logEvent(name: AnalyticEvent.showOpenAds);
+      }
+    } catch (e) {
       onComplete != null ? onComplete(false) : null;
-    } else {
-      AnalyticKit().logEvent(name: AnalyticEvent.showOpenAds);
+      log(e.toString());
     }
   }
 

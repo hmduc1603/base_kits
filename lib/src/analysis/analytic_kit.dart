@@ -27,9 +27,10 @@ class AnalyticKit {
           .onError((error, stackTrace) {
         log(error.toString());
       });
-    }
-    if (name == AnalyticEvent.purchaseSuccess && params != null) {
-      FirebaseStorageKit().addData(collection: AnalyticEvent.purchaseSuccess, data: params);
+      if (name == AnalyticEvent.purchaseSuccess && params != null) {
+        FirebaseStorageKit()
+            .addData(collection: AnalyticEvent.purchaseSuccess, data: params);
+      }
     }
   }
 }

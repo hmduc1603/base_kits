@@ -20,6 +20,7 @@ class AdmobKit {
   AppOpenAd? _appOpenAd;
   List<BannerAd> bannerAds = [];
   List<String> usedBannerAdResponseIds = [];
+  Completer? initCompleter;
 
   BannerAd? getLoadedBannerAd() {
     try {
@@ -119,11 +120,13 @@ class AdmobKit {
     }
   }
 
-  init(AdConfig adConfig, AdUnitConfig adUnitConfig) async {
+  Future<void> init(AdConfig adConfig, AdUnitConfig adUnitConfig) async {
+    initCompleter = Completer();
     _adUnitConfig = adUnitConfig;
     this.adConfig = adConfig;
     await MobileAds.instance.initialize();
     await preloadOpenAds();
+    initCompleter?.complete();
     log('Completed initializing', name: 'AdmobKit');
   }
 

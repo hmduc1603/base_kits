@@ -38,13 +38,17 @@ class _BannerAdWidgetState extends State<AdmobServiceBannerAdWidget> {
             );
           });
     }
-    return SafeArea(
-      child: Container(
-        width: double.infinity,
-        height: 72.0,
-        alignment: Alignment.center,
-        child: AdWidget(ad: ad!),
-      ),
-    );
+    return FutureBuilder<AdSize?>(
+        future: ad!.getPlatformAdSize(),
+        builder: (context, snapshot) {
+          return SafeArea(
+            child: Container(
+              width: double.infinity,
+              height: snapshot.data?.height.toDouble() ?? 72.0,
+              alignment: Alignment.center,
+              child: AdWidget(ad: ad!),
+            ),
+          );
+        });
   }
 }

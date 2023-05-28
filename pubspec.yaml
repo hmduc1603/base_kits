@@ -26,7 +26,7 @@ dependencies:
   connectivity_plus: ^3.0.3
   in_app_review: ^2.0.6
   flutter_email_sender: ^5.2.0
-  google_mobile_ads: ^2.4.0
+  google_mobile_ads: ^3.0.0
   package_info_plus: ^3.0.3
   device_info_plus: ^7.0.0
   number_display: ^3.0.0

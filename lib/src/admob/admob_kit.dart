@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:developer';
-import 'package:base_kits/src/admob/entity/custom_banner_ad.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -18,11 +17,41 @@ class AdmobKit {
   late AdUnitConfig _adUnitConfig;
   InterstitialAd? _interstitialAd;
   AppOpenAd? _appOpenAd;
-  List<CustomBannerAd> bannerAds = [];
-  List<String> usedBannerAdResponseIds = [];
+  BannerAd? bannerAds;
+  bool isBannerAdPreloaded = false;
   Completer? initCompleter;
 
-  Future<void> preloadBannerAd({Function(BannerAd ad)? onReceivedAd}) async {
+  Future<BannerAd?> forceShowBannerAd() async {
+    try {
+      final completer = Completer<BannerAd?>();
+      await BannerAd(
+        adUnitId: _adUnitConfig.bannerId,
+        size: AdSize.banner,
+        request: const AdRequest(),
+        listener: BannerAdListener(
+          onAdLoaded: (ad) {
+            completer.complete(ad as BannerAd);
+            log('BannerAd is Loaded!!!', name: "AdmobKit");
+          },
+          onAdFailedToLoad: (ad, error) {
+            // Releases an ad resource when it fails to load
+            ad.dispose();
+            completer.complete(null);
+            log('BannerAd failed to load: $error', name: "AdmobKit");
+          },
+        ),
+      ).load();
+      return completer.future;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  Future<void> preloadBannerAd() async {
+    if (bannerAds != null && isBannerAdPreloaded) {
+      return;
+    }
     try {
       final completer = Completer();
       await BannerAd(
@@ -31,9 +60,8 @@ class AdmobKit {
         request: const AdRequest(),
         listener: BannerAdListener(
           onAdLoaded: (ad) {
-            onReceivedAd != null
-                ? onReceivedAd(ad as BannerAd)
-                : bannerAds.add(CustomBannerAd(ad: ad as BannerAd));
+            bannerAds = ad as BannerAd;
+            isBannerAdPreloaded = true;
             completer.complete();
             log('BannerAd is Loaded!!!', name: "AdmobKit");
           },

@@ -2,12 +2,12 @@
 
 import 'dart:async';
 import 'dart:developer';
+import 'package:base_kits/src/admob/entity/custom_banner_ad.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../base_kits.dart';
 import 'ads_counting_manager.dart';
-import 'package:collection/collection.dart';
 
 class AdmobKit {
   static final AdmobKit _instance = AdmobKit._internal();
@@ -18,28 +18,11 @@ class AdmobKit {
   late AdUnitConfig _adUnitConfig;
   InterstitialAd? _interstitialAd;
   AppOpenAd? _appOpenAd;
-  List<BannerAd> bannerAds = [];
+  List<CustomBannerAd> bannerAds = [];
   List<String> usedBannerAdResponseIds = [];
   Completer? initCompleter;
 
-  BannerAd? getLoadedBannerAd() {
-    try {
-      final ad = bannerAds.firstWhereOrNull(
-          (e) => !usedBannerAdResponseIds.contains(e.responseInfo?.responseId));
-      if (ad != null && ad.responseInfo?.responseId != null) {
-        preloadBannerAd(onReceivedAd: null);
-        usedBannerAdResponseIds.add(ad.responseInfo!.responseId!);
-        return ad;
-      }
-      return null;
-    } catch (e) {
-      log(e.toString());
-      return null;
-    }
-  }
-
-  Future<void> preloadBannerAd(
-      {required Function(BannerAd ad)? onReceivedAd}) async {
+  Future<void> preloadBannerAd({Function(BannerAd ad)? onReceivedAd}) async {
     try {
       final completer = Completer();
       await BannerAd(
@@ -50,7 +33,7 @@ class AdmobKit {
           onAdLoaded: (ad) {
             onReceivedAd != null
                 ? onReceivedAd(ad as BannerAd)
-                : bannerAds.add(ad as BannerAd);
+                : bannerAds.add(CustomBannerAd(ad: ad as BannerAd));
             completer.complete();
             log('BannerAd is Loaded!!!', name: "AdmobKit");
           },
@@ -125,7 +108,12 @@ class AdmobKit {
     _adUnitConfig = adUnitConfig;
     this.adConfig = adConfig;
     await MobileAds.instance.initialize();
-    await preloadOpenAds();
+    if (adConfig.enableOpenAd) {
+      await preloadOpenAds();
+    }
+    if (adConfig.enableBannerAd) {
+      await preloadBannerAd();
+    }
     initCompleter?.complete();
     log('Completed initializing', name: 'AdmobKit');
   }

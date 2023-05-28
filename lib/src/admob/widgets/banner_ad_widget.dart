@@ -1,6 +1,10 @@
+import 'dart:developer';
+
 import 'package:base_kits/src/admob/admob_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+// ignore: depend_on_referenced_packages
+import 'package:collection/collection.dart';
 
 class AdmobServiceBannerAdWidget extends StatefulWidget {
   const AdmobServiceBannerAdWidget({super.key});
@@ -14,13 +18,25 @@ class _BannerAdWidgetState extends State<AdmobServiceBannerAdWidget> {
 
   @override
   void initState() {
-    AdmobKit().preloadBannerAd(
-      onReceivedAd: (ad) {
-        setState(() {
-          this.ad = ad;
-        });
-      },
-    );
+    final indexOfPreloadedBannerAd =
+        AdmobKit().bannerAds.indexWhere((e) => !e.didShow);
+    if (indexOfPreloadedBannerAd != -1) {
+      setState(() {
+        ad = AdmobKit().bannerAds[indexOfPreloadedBannerAd].ad;
+        AdmobKit().bannerAds[indexOfPreloadedBannerAd].didShow = true;
+      });
+      AdmobKit().preloadBannerAd();
+      log("Use preloaded banner ad", name: "AdmobServiceBannerAdWidget");
+    } else {
+      AdmobKit().preloadBannerAd(
+        onReceivedAd: (ad) {
+          setState(() {
+            this.ad = ad;
+          });
+        },
+      );
+      log("Loaded banner ad", name: "AdmobServiceBannerAdWidget");
+    }
     super.initState();
   }
 

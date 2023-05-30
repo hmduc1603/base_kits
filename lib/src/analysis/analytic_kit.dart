@@ -19,6 +19,7 @@ class AnalyticKit {
 
   void logEvent({required String name, Map<String, dynamic>? params}) {
     log('log event: $name', name: 'AnalyticKit');
+    log('log event params: $params', name: 'AnalyticKit');
     if (kReleaseMode) {
       FirebaseAnalytics.instance
           .logEvent(

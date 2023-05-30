@@ -195,12 +195,17 @@ class AdmobKit {
         await preloadOpenAds();
       }
       _appOpenAd?.fullScreenContentCallback = FullScreenContentCallback(
-        onAdDismissedFullScreenContent: (AppOpenAd ad) {
+        onAdShowedFullScreenContent: (ad) {
+          log('Open Ad: onAdShowedFullScreenContent', name: 'AdmobKit');
           onComplete != null ? onComplete(true) : null;
+        },
+        onAdDismissedFullScreenContent: (AppOpenAd ad) {
+          log('Open Ad: onAdDismissedFullScreenContent', name: 'AdmobKit');
           _appOpenAd?.dispose();
           _appOpenAd = null;
         },
         onAdFailedToShowFullScreenContent: (AppOpenAd ad, AdError error) {
+          log('Open Ad: onAdFailedToShowFullScreenContent', name: 'AdmobKit');
           onComplete != null ? onComplete(false) : null;
           _appOpenAd?.dispose();
           _appOpenAd = null;

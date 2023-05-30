@@ -2,11 +2,14 @@
 
 import 'dart:async';
 import 'dart:developer';
+import 'package:base_kits/src/admob/entity/custom_banner_ad.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../base_kits.dart';
 import 'ads_counting_manager.dart';
+
+export '/src/admob/entity/ad_test.dart';
 
 class AdmobKit {
   static final AdmobKit _instance = AdmobKit._internal();
@@ -17,8 +20,7 @@ class AdmobKit {
   late AdUnitConfig _adUnitConfig;
   InterstitialAd? _interstitialAd;
   AppOpenAd? _appOpenAd;
-  BannerAd? bannerAds;
-  bool isBannerAdPreloaded = false;
+  List<CustomBannerAd> bannerAds = [];
   Completer? initCompleter;
 
   Future<BannerAd?> forceShowBannerAd() async {
@@ -31,13 +33,14 @@ class AdmobKit {
         listener: BannerAdListener(
           onAdLoaded: (ad) {
             completer.complete(ad as BannerAd);
-            log('BannerAd is Loaded!!!', name: "AdmobKit");
+            log('Force show: BannerAd is Loaded!!!', name: "AdmobKit");
           },
           onAdFailedToLoad: (ad, error) {
             // Releases an ad resource when it fails to load
             ad.dispose();
             completer.complete(null);
-            log('BannerAd failed to load: $error', name: "AdmobKit");
+            log('Force show:  BannerAd failed to load: $error',
+                name: "AdmobKit");
           },
         ),
       ).load();
@@ -48,10 +51,17 @@ class AdmobKit {
     }
   }
 
-  Future<void> preloadBannerAd() async {
-    if (bannerAds != null && isBannerAdPreloaded) {
-      return;
+  BannerAd? getPreloadedBannerAd() {
+    final index = bannerAds.indexWhere((e) => !e.didShow && e.ad != null);
+    if (index == -1) {
+      return null;
+    } else {
+      bannerAds[index].didShow = true;
+      return bannerAds[index].ad;
     }
+  }
+
+  Future<void> preloadBannerAd() async {
     try {
       final completer = Completer();
       await BannerAd(
@@ -60,13 +70,13 @@ class AdmobKit {
         request: const AdRequest(),
         listener: BannerAdListener(
           onAdLoaded: (ad) {
-            bannerAds = ad as BannerAd;
-            isBannerAdPreloaded = true;
+            bannerAds.add(CustomBannerAd(ad: ad as BannerAd));
             completer.complete();
             log('BannerAd is Loaded!!!', name: "AdmobKit");
           },
           onAdFailedToLoad: (ad, error) {
             // Releases an ad resource when it fails to load
+            bannerAds.add(CustomBannerAd(ad: null));
             ad.dispose();
             completer.complete();
             log('BannerAd failed to load: $error', name: "AdmobKit");

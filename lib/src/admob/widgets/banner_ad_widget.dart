@@ -16,10 +16,17 @@ class _BannerAdWidgetState extends State<AdmobServiceBannerAdWidget> {
   BannerAd? ad;
 
   @override
+  void dispose() {
+    ad?.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
-    if (AdmobKit().isBannerAdPreloaded) {
+    final preloadedAd = AdmobKit().getPreloadedBannerAd();
+    if (preloadedAd != null) {
       setState(() {
-        ad = AdmobKit().bannerAds;
+        ad = preloadedAd;
       });
       AdmobKit().preloadBannerAd();
       log("Use preloaded banner ad", name: "AdmobServiceBannerAdWidget");
@@ -51,17 +58,13 @@ class _BannerAdWidgetState extends State<AdmobServiceBannerAdWidget> {
             );
           });
     }
-    return FutureBuilder<AdSize?>(
-        future: ad!.getPlatformAdSize(),
-        builder: (context, snapshot) {
-          return SafeArea(
-            child: Container(
-              width: double.infinity,
-              height: snapshot.data?.height.toDouble() ?? 72.0,
-              alignment: Alignment.center,
-              child: AdWidget(ad: ad!),
-            ),
-          );
-        });
+    return SafeArea(
+      child: Container(
+        width: double.infinity,
+        height: ad!.size.height.toDouble(),
+        alignment: Alignment.center,
+        child: AdWidget(ad: ad!),
+      ),
+    );
   }
 }

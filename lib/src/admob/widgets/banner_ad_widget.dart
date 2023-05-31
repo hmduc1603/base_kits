@@ -25,11 +25,10 @@ class _BannerAdWidgetState extends State<AdmobServiceBannerAdWidget> {
   void initState() {
     final preloadedAd = AdmobKit().getPreloadedBannerAd();
     if (preloadedAd != null) {
-      setState(() {
-        ad = preloadedAd;
-      });
+      ad = preloadedAd;
       AdmobKit().preloadBannerAd();
-      log("Use preloaded banner ad", name: "AdmobServiceBannerAdWidget");
+      log("Use preloaded banner ad: ${preloadedAd.responseInfo?.responseId}",
+          name: "AdmobServiceBannerAdWidget");
     } else {
       AdmobKit().forceShowBannerAd().then((value) {
         if (value != null) {
@@ -46,6 +45,9 @@ class _BannerAdWidgetState extends State<AdmobServiceBannerAdWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (!AdmobKit().adConfig.enableBannerAd) {
+      return const SizedBox();
+    }
     if (ad == null) {
       return FutureBuilder(
           future: Future.delayed(const Duration(seconds: 5)),
@@ -60,10 +62,13 @@ class _BannerAdWidgetState extends State<AdmobServiceBannerAdWidget> {
     }
     return SafeArea(
       child: Container(
-        width: double.infinity,
+        width: ad!.size.width.toDouble(),
         height: ad!.size.height.toDouble(),
         alignment: Alignment.center,
-        child: AdWidget(ad: ad!),
+        child: AdWidget(
+          key: Key(ad!.responseInfo!.responseId!),
+          ad: ad!,
+        ),
       ),
     );
   }

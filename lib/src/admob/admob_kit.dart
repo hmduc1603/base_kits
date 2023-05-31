@@ -57,7 +57,7 @@ class AdmobKit {
       return null;
     } else {
       bannerAds[index].didShow = true;
-      return bannerAds[index].ad;
+      return bannerAds.toList()[index].ad;
     }
   }
 
@@ -89,7 +89,7 @@ class AdmobKit {
     }
   }
 
-  Future<void> _loadIntersitial() async {
+  Future<void> preloadIntersitial() async {
     // InterstitialAd
     final completer = Completer();
     try {
@@ -152,19 +152,26 @@ class AdmobKit {
     if (adConfig.enableBannerAd) {
       await preloadBannerAd();
     }
+    if (adConfig.enableInterstitialAd) {
+      await preloadIntersitial();
+    }
     initCompleter?.complete();
     log('Completed initializing', name: 'AdmobKit');
   }
 
   void showInterstitialAd(
       {Function(bool didShow)? onComplete, VoidCallback? onReachLimit}) {
+    if (!adConfig.enableInterstitialAd) {
+      onComplete != null ? onComplete(false) : null;
+      return;
+    }
     try {
       AdsCountingManager().checkShouldShowAds(
         onShouldShowAds: (shouldShowAds) async {
           if (shouldShowAds) {
             log('showInterstitialAd', name: 'AdmobKit');
             if (_interstitialAd == null) {
-              await _loadIntersitial();
+              await preloadIntersitial();
             }
             _interstitialAd?.fullScreenContentCallback =
                 FullScreenContentCallback(
@@ -172,12 +179,14 @@ class AdmobKit {
                 onComplete != null ? onComplete(true) : null;
                 _interstitialAd?.dispose();
                 _interstitialAd = null;
+                preloadIntersitial();
               },
               onAdFailedToShowFullScreenContent:
                   (InterstitialAd ad, AdError error) {
                 onComplete != null ? onComplete(false) : null;
                 _interstitialAd?.dispose();
                 _interstitialAd = null;
+                preloadIntersitial();
               },
             );
             await _interstitialAd?.show();
@@ -199,6 +208,10 @@ class AdmobKit {
   }
 
   Future<void> showAppOpenAd({Function(bool didShow)? onComplete}) async {
+    if (!adConfig.enableOpenAd) {
+      onComplete != null ? onComplete(false) : null;
+      return;
+    }
     try {
       log('showAppOpenAd', name: 'AdmobKit');
       if (_appOpenAd == null) {
@@ -213,12 +226,14 @@ class AdmobKit {
           log('Open Ad: onAdDismissedFullScreenContent', name: 'AdmobKit');
           _appOpenAd?.dispose();
           _appOpenAd = null;
+          preloadOpenAds();
         },
         onAdFailedToShowFullScreenContent: (AppOpenAd ad, AdError error) {
           log('Open Ad: onAdFailedToShowFullScreenContent', name: 'AdmobKit');
           onComplete != null ? onComplete(false) : null;
           _appOpenAd?.dispose();
           _appOpenAd = null;
+          preloadOpenAds();
         },
       );
       await _appOpenAd?.show();
@@ -234,6 +249,9 @@ class AdmobKit {
   }
 
   Future<void> forceShowAppOpenAds() async {
+    if (!adConfig.enableOpenAd) {
+      return;
+    }
     try {
       await AppOpenAd.load(
         adUnitId: _adUnitConfig.appOpenId,
@@ -254,6 +272,9 @@ class AdmobKit {
   }
 
   Future<void> forceShowInterstitialAds() async {
+    if (!adConfig.enableInterstitialAd) {
+      return;
+    }
     try {
       await InterstitialAd.load(
           adUnitId: _adUnitConfig.interstitialId,

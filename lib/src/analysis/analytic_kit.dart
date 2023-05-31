@@ -24,6 +24,7 @@ class AnalyticKit {
       FirebaseAnalytics.instance
           .logEvent(
         name: name,
+        parameters: params,
       )
           .onError((error, stackTrace) {
         log(error.toString());

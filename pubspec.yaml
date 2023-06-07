@@ -19,7 +19,7 @@ dependencies:
   cloud_firestore: ^4.5.0
 
   in_app_purchase: ^3.0.8
-  rxdart: ^0.27.1
+  rxdart: ^0.27.7
   path_provider: ^2.0.11
   shared_preferences: ^2.0.18
   json_annotation: ^4.4.0
@@ -30,7 +30,7 @@ dependencies:
   package_info_plus: ^3.0.3
   device_info_plus: ^7.0.0
   number_display: ^3.0.0
-
+  package_info: ^2.0.2
 
 dev_dependencies:
   flutter_lints: ^2.0.0

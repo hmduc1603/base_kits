@@ -18,6 +18,7 @@ export '/src/admob/widgets/banner_ad_widget.dart';
 export '/src/util/form_util.dart';
 export '/src/util/number_util.dart';
 export '/src/util/string_util.dart';
+export '/src/util/event_bus.dart';
 
 class BaseKits {
   static final BaseKits _instance = BaseKits._internal();

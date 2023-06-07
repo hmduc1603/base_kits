@@ -62,6 +62,9 @@ class AdmobKit {
   }
 
   Future<void> preloadBannerAd() async {
+    if (!adConfig.enableBannerAd) {
+      return;
+    }
     try {
       final completer = Completer();
       await BannerAd(
@@ -90,6 +93,9 @@ class AdmobKit {
   }
 
   Future<void> preloadIntersitial() async {
+    if (!adConfig.enableInterstitialAd) {
+      return;
+    }
     // InterstitialAd
     final completer = Completer();
     try {
@@ -116,6 +122,9 @@ class AdmobKit {
   }
 
   Future<void> preloadOpenAds() async {
+    if (!adConfig.enableOpenAd) {
+      return;
+    }
     final completer = Completer();
     try {
       await AppOpenAd.load(
@@ -146,15 +155,11 @@ class AdmobKit {
     _adUnitConfig = adUnitConfig;
     this.adConfig = adConfig;
     await MobileAds.instance.initialize();
-    if (adConfig.enableOpenAd) {
-      await preloadOpenAds();
-    }
-    if (adConfig.enableBannerAd) {
-      await preloadBannerAd();
-    }
-    if (adConfig.enableInterstitialAd) {
-      await preloadIntersitial();
-    }
+    await Future.wait([
+      preloadOpenAds(),
+      preloadIntersitial(),
+      preloadBannerAd(),
+    ]);
     initCompleter?.complete();
     log('Completed initializing', name: 'AdmobKit');
   }

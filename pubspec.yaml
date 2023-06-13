@@ -31,6 +31,7 @@ dependencies:
   device_info_plus: ^7.0.0
   number_display: ^3.0.0
   package_info: ^2.0.2
+  appsflyer_sdk: ^6.11.1
 
 dev_dependencies:
   flutter_lints: ^2.0.0

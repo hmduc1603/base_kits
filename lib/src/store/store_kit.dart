@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:base_kits/base_kits.dart';
 import 'package:base_kits/src/local/local_storage.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
@@ -73,9 +72,9 @@ class StoreKit {
             if (kReleaseMode) {
               if (successfullPurchaseDetail.status ==
                   PurchaseStatus.purchased) {
-                FirebaseAnalytics.instance.logPurchase(
-                  value: SubscriptionTracking().value,
+                AnalyticKit().logPurchase(
                   currency: SubscriptionTracking().currency,
+                  price: SubscriptionTracking().value,
                 );
                 AnalyticKit().logEvent(
                   name: AnalyticEvent.purchaseSuccess,
@@ -153,13 +152,13 @@ class StoreKit {
         final completer = Completer();
         Timer.periodic(const Duration(seconds: 1), (timer) {
           if (timer.tick == 10 && !_isSuccessfullyRestored) {
-            FirebaseAnalytics.instance.logEvent(name: "restore_failed");
+            AnalyticKit().logEvent(name: "restore_failed");
             onTimeOut != null ? onTimeOut() : null;
             completer.complete();
             timer.cancel();
           }
           if (_isSuccessfullyRestored) {
-            FirebaseAnalytics.instance.logEvent(name: "restore_success");
+            AnalyticKit().logEvent(name: "restore_success");
             onSuccessfullyRestored != null ? onSuccessfullyRestored() : null;
             timer.cancel();
             completer.complete();

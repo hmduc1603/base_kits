@@ -19,6 +19,8 @@ export '/src/util/form_util.dart';
 export '/src/util/number_util.dart';
 export '/src/util/string_util.dart';
 export '/src/util/event_bus.dart';
+export '/src/analysis/handlers/firebase_handler.dart';
+export '/src/analysis/handlers/appflyer_handler.dart';
 
 class BaseKits {
   static final BaseKits _instance = BaseKits._internal();

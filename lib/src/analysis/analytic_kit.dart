@@ -18,9 +18,9 @@ class AnalyticKit {
   }) async {
     log('log app open', name: 'AnalyticKit');
     for (var e in handlers) {
-      if (e is FirebaseHandler) {
+      if (e == FirebaseHandler) {
         _handlers.add(FirebaseHandler()..init());
-      } else if (e is AppFlyerHandler) {
+      } else if (e == AppFlyerHandler) {
         _handlers.add(AppFlyerHandler()..init(afDevKey, afAppId));
       }
     }

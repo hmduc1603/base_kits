@@ -16,7 +16,8 @@ class FormUtil {
     return RegExp(pattern).hasMatch(value) ? null : onInvalid;
   }
 
-  static String? validateEmpty(String? value, String onEmpty) {
+  static String? validateEmpty(String? value,
+      {String onEmpty = "Please input this field!"}) {
     if (value == null) return null;
     if (value.isEmpty) return onEmpty;
     return null;
@@ -35,6 +36,21 @@ class FormUtil {
     if (value == null) return null;
     if (value.isEmpty) return onEmpty;
     if (value.length < 8) return onInvalid;
+    return null;
+  }
+
+  static String? validateLength(
+      String? value, int number, String onEmpty, String onInvalid) {
+    if (value == null) return null;
+    if (value.isEmpty) return onEmpty;
+    if (value.length <= number) return onInvalid;
+    return null;
+  }
+
+  static String? validateMaximumLength(
+      String? value, int number, String onInvalid) {
+    if (value == null) return null;
+    if (value.length > number) return onInvalid;
     return null;
   }
 }

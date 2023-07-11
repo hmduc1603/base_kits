@@ -115,7 +115,14 @@ class StoreKit {
   Future<void> queryProducts(Set<String> productIds) async {
     final ProductDetailsResponse response =
         await InAppPurchase.instance.queryProductDetails(productIds);
-    listProductDetails = response.productDetails;
+    listProductDetails = [];
+    for (var id in productIds) {
+      final product =
+          response.productDetails.firstWhereOrNull((e) => e.id == id);
+      if (product != null) {
+        listProductDetails.add(product);
+      }
+    }
     for (var e in response.productDetails) {
       log('Got products: ${e.title} + ${e.price}', name: 'StoreKit');
     }

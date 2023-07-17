@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:package_info/package_info.dart';
@@ -23,6 +24,7 @@ class FirebaseStorageKit {
     final adjustedData = data;
     adjustedData["created_date"] = DateTime.now();
     adjustedData["version"] = await _getAppVersion();
+    adjustedData["platform"] = Platform.isAndroid ? "Android" : "IOS";
     final CollectionReference collectionRef =
         FirebaseFirestore.instance.collection(collection);
     collectionRef

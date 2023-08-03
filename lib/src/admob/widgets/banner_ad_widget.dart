@@ -60,15 +60,13 @@ class _BannerAdWidgetState extends State<AdmobServiceBannerAdWidget> {
             );
           });
     }
-    return SafeArea(
-      child: Container(
-        width: ad!.size.width.toDouble(),
-        height: ad!.size.height.toDouble(),
-        alignment: Alignment.center,
-        child: AdWidget(
-          key: Key(ad!.responseInfo!.responseId!),
-          ad: ad!,
-        ),
+    return Container(
+      width: ad!.size.width.toDouble(),
+      height: ad!.size.height.toDouble(),
+      alignment: Alignment.center,
+      child: AdWidget(
+        key: Key(ad!.responseInfo!.responseId!),
+        ad: ad!,
       ),
     );
   }

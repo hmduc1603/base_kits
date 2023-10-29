@@ -9,4 +9,6 @@ class AdTestId {
       "ca-app-pub-3940256099942544/3419835294";
   static const String BANNER_ADS_UNIT_ID =
       "ca-app-pub-3940256099942544/6300978111";
+  static const String REWARD_ADS_UNIT_ID =
+      "ca-app-pub-3940256099942544/5224354917";
 }

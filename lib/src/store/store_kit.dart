@@ -33,8 +33,7 @@ class StoreKit {
           for (var i = 0; i < listPurchaseDetails.length; i++) {
             final purchase = listPurchaseDetails[i];
             if (purchase.pendingCompletePurchase &&
-                (purchase.status == PurchaseStatus.restored ||
-                    purchase.status == PurchaseStatus.purchased)) {
+                purchase.status != PurchaseStatus.pending) {
               log('Completed pending purchase!', name: 'StoreKit');
               await InAppPurchase.instance.completePurchase(purchase);
             }

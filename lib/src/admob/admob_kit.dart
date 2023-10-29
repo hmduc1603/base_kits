@@ -20,6 +20,7 @@ class AdmobKit {
   late AdUnitConfig _adUnitConfig;
   InterstitialAd? _interstitialAd;
   AppOpenAd? _appOpenAd;
+  RewardedAd? _rewardedAd;
   List<CustomBannerAd> bannerAds = [];
   Completer? initCompleter;
 
@@ -142,6 +143,31 @@ class AdmobKit {
           },
         ),
         orientation: AppOpenAd.orientationPortrait,
+      );
+      await completer.future;
+    } catch (e) {
+      log(e.toString());
+      completer.complete();
+    }
+  }
+
+  Future<void> preloadRewardAds() async {
+    final completer = Completer();
+    try {
+      await RewardedAd.load(
+        adUnitId: _adUnitConfig.appOpenId,
+        request: const AdRequest(),
+        rewardedAdLoadCallback: RewardedAdLoadCallback(
+          onAdLoaded: (ad) {
+            _rewardedAd = ad;
+            completer.complete();
+            log('RewardAds is Loaded!!!', name: "AdmobKit");
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            log('RewardAds failed to load: $error', name: "AdmobKit");
+            completer.complete();
+          },
+        ),
       );
       await completer.future;
     } catch (e) {
@@ -294,6 +320,65 @@ class AdmobKit {
           ));
     } catch (e, s) {
       log(e.toString());
+      FirebaseCrashlytics.instance.recordError(e, s);
+    }
+  }
+
+  Future<void> showRewardAd(
+      {Function(bool didShow)? onComplete, Function(int)? onRewarded}) async {
+    try {
+      log('showRewardAd', name: 'AdmobKit');
+      if (_rewardedAd == null) {
+        await preloadRewardAds();
+      }
+      _rewardedAd?.fullScreenContentCallback = FullScreenContentCallback(
+        onAdShowedFullScreenContent: (ad) {
+          log('Open Ad: onAdShowedFullScreenContent', name: 'AdmobKit');
+          onComplete != null ? onComplete(true) : null;
+        },
+        onAdWillDismissFullScreenContent: (RewardedAd ad) {
+          log('Open Ad: onAdDismissedFullScreenContent', name: 'AdmobKit');
+          _rewardedAd?.dispose();
+          _rewardedAd = null;
+          preloadRewardAds();
+        },
+      );
+      await _rewardedAd?.show(
+          onUserEarnedReward: (ad, reward) =>
+              onRewarded?.call(reward.amount.toInt()));
+      if (_rewardedAd == null) {
+        onComplete != null ? onComplete(false) : null;
+      } else {
+        AnalyticKit().logEvent(name: AnalyticEvent.showRewardAds);
+      }
+    } catch (e) {
+      onComplete != null ? onComplete(false) : null;
+      log(e.toString());
+    }
+  }
+
+  Future<void> forceShowRewardAds({Function(int point)? onCompleted}) async {
+    try {
+      final completer = Completer();
+      await RewardedAd.load(
+        adUnitId: _adUnitConfig.appOpenId,
+        request: const AdRequest(),
+        rewardedAdLoadCallback: RewardedAdLoadCallback(
+          onAdLoaded: (ad) {
+            ad.show(
+                onUserEarnedReward: (ad, reward) =>
+                    onCompleted?.call(reward.amount.toInt()));
+            completer.complete();
+            log('RewardAds is Loaded!!!', name: "AdmobKit");
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            log('RewardAds failed to load: $error', name: "AdmobKit");
+            completer.complete();
+          },
+        ),
+      );
+      await completer.future;
+    } catch (e, s) {
       FirebaseCrashlytics.instance.recordError(e, s);
     }
   }

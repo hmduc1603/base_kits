@@ -49,4 +49,5 @@ class AnalyticEvent {
   static const showOpenAds = 'show_open_ads';
   static const showInterstitial = 'show_interstitial_ads';
   static const showBannerAds = 'show_banner_ads';
+  static const showRewardAds = 'show_reward_ads';
 }

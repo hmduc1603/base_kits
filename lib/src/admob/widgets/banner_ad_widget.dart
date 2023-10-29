@@ -6,7 +6,12 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 // ignore: depend_on_referenced_packages
 
 class AdmobServiceBannerAdWidget extends StatefulWidget {
-  const AdmobServiceBannerAdWidget({super.key});
+  const AdmobServiceBannerAdWidget({
+    super.key,
+    this.useForceShow = false,
+  });
+
+  final bool useForceShow;
 
   @override
   State<AdmobServiceBannerAdWidget> createState() => _BannerAdWidgetState();
@@ -24,18 +29,22 @@ class _BannerAdWidgetState extends State<AdmobServiceBannerAdWidget> {
   @override
   void initState() {
     final preloadedAd = AdmobKit().getPreloadedBannerAd();
-    if (preloadedAd != null) {
+    if (preloadedAd != null && !widget.useForceShow) {
       ad = preloadedAd;
       AdmobKit().preloadBannerAd();
       log("Use preloaded banner ad: ${preloadedAd.responseInfo?.responseId}",
           name: "AdmobServiceBannerAdWidget");
     } else {
       AdmobKit().forceShowBannerAd().then((value) {
-        if (value != null) {
-          setState(() {
-            ad = value;
-          });
-          AdmobKit().preloadBannerAd();
+        try {
+          if (value != null) {
+            setState(() {
+              ad = value;
+            });
+            AdmobKit().preloadBannerAd();
+          }
+        } catch (e) {
+          log(e.toString());
         }
       });
       log("Loaded banner ad", name: "AdmobServiceBannerAdWidget");

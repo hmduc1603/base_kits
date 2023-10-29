@@ -22,6 +22,8 @@ export '/src/util/event_bus.dart';
 export '/src/analysis/handlers/firebase_handler.dart';
 export '/src/analysis/handlers/appflyer_handler.dart';
 export '/src/rating/review_manager.dart';
+export '/src/util/duration_util.dart';
+export '/src/widgets/onboarding_widget.dart';
 
 class BaseKits {
   static final BaseKits _instance = BaseKits._internal();

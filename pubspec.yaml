@@ -12,13 +12,12 @@ dependencies:
     sdk: flutter
 
   # Firebase
-  firebase_core: ^2.14.0
-  firebase_crashlytics: ^3.0.6
-  firebase_remote_config: ^3.0.6
-  firebase_analytics: ^10.0.7
+  firebase_core: ^2.16.0
+  firebase_crashlytics: ^3.3.6
+  firebase_analytics: ^10.5.0
   cloud_firestore: ^4.5.0
 
-  in_app_purchase: ^3.0.8
+  in_app_purchase: ^3.1.11
   rxdart: ^0.27.7
   path_provider: ^2.0.11
   shared_preferences: ^2.0.18
@@ -27,17 +26,17 @@ dependencies:
   in_app_review: ^2.0.6
   flutter_email_sender: ^5.2.0
   google_mobile_ads: ^3.0.0
-  package_info_plus: ^3.0.3
-  device_info_plus: ^7.0.0
+  package_info_plus: ^4.0.2
+  device_info_plus: ^8.1.0
   number_display: ^3.0.0
   package_info: ^2.0.2
   appsflyer_sdk: ^6.11.1
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_lints: ^2.0.0
   json_serializable: ^6.2.0
-  build_runner: ^2.1.11
-
+  build_runner: ^2.4.6
 
 
 # For information on the generic Dart part of this file, see the

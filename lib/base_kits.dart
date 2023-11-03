@@ -24,6 +24,7 @@ export '/src/analysis/handlers/appflyer_handler.dart';
 export '/src/rating/review_manager.dart';
 export '/src/util/duration_util.dart';
 export '/src/widgets/onboarding_widget.dart';
+export '/src/auth/auth_kit.dart';
 
 class BaseKits {
   static final BaseKits _instance = BaseKits._internal();

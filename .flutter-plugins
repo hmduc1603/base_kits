@@ -1,14 +1,16 @@
 # This is a generated file; do not edit or check into version control.
 appsflyer_sdk=/Users/dennish/.pub-cache/hosted/pub.dev/appsflyer_sdk-6.12.2/
-cloud_firestore=/Users/dennish/.pub-cache/hosted/pub.dev/cloud_firestore-4.9.2/
-cloud_firestore_web=/Users/dennish/.pub-cache/hosted/pub.dev/cloud_firestore_web-3.7.1/
+cloud_firestore=/Users/dennish/.pub-cache/hosted/pub.dev/cloud_firestore-4.12.2/
+cloud_firestore_web=/Users/dennish/.pub-cache/hosted/pub.dev/cloud_firestore_web-3.8.3/
 connectivity_plus=/Users/dennish/.pub-cache/hosted/pub.dev/connectivity_plus-3.0.6/
 device_info_plus=/Users/dennish/.pub-cache/hosted/pub.dev/device_info_plus-8.2.2/
-firebase_analytics=/Users/dennish/.pub-cache/hosted/pub.dev/firebase_analytics-10.5.0/
-firebase_analytics_web=/Users/dennish/.pub-cache/hosted/pub.dev/firebase_analytics_web-0.5.5/
-firebase_core=/Users/dennish/.pub-cache/hosted/pub.dev/firebase_core-2.16.0/
-firebase_core_web=/Users/dennish/.pub-cache/hosted/pub.dev/firebase_core_web-2.8.0/
-firebase_crashlytics=/Users/dennish/.pub-cache/hosted/pub.dev/firebase_crashlytics-3.3.6/
+firebase_analytics=/Users/dennish/.pub-cache/hosted/pub.dev/firebase_analytics-10.6.3/
+firebase_analytics_web=/Users/dennish/.pub-cache/hosted/pub.dev/firebase_analytics_web-0.5.5+5/
+firebase_auth=/Users/dennish/.pub-cache/hosted/pub.dev/firebase_auth-4.12.1/
+firebase_auth_web=/Users/dennish/.pub-cache/hosted/pub.dev/firebase_auth_web-5.8.6/
+firebase_core=/Users/dennish/.pub-cache/hosted/pub.dev/firebase_core-2.21.0/
+firebase_core_web=/Users/dennish/.pub-cache/hosted/pub.dev/firebase_core_web-2.8.1/
+firebase_crashlytics=/Users/dennish/.pub-cache/hosted/pub.dev/firebase_crashlytics-3.4.3/
 flutter_email_sender=/Users/dennish/.pub-cache/hosted/pub.dev/flutter_email_sender-5.2.0/
 google_mobile_ads=/Users/dennish/.pub-cache/hosted/pub.dev/google_mobile_ads-3.0.0/
 in_app_purchase=/Users/dennish/.pub-cache/hosted/pub.dev/in_app_purchase-3.1.11/

@@ -16,6 +16,7 @@ dependencies:
   firebase_crashlytics: ^3.3.6
   firebase_analytics: ^10.5.0
   cloud_firestore: ^4.5.0
+  firebase_auth: ^4.12.1
 
   in_app_purchase: ^3.1.11
   rxdart: ^0.27.7

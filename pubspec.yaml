@@ -15,7 +15,7 @@ dependencies:
   firebase_core: ^2.16.0
   firebase_crashlytics: ^3.3.6
   firebase_analytics: ^10.5.0
-  cloud_firestore: ^4.5.0
+  cloud_firestore: ^4.12.2
   firebase_auth: ^4.12.1
 
   in_app_purchase: ^3.1.11
@@ -31,7 +31,6 @@ dependencies:
   device_info_plus: ^8.1.0
   number_display: ^3.0.0
   package_info: ^2.0.2
-  appsflyer_sdk: ^6.11.1
   auto_size_text: ^3.0.0
 
 dev_dependencies:

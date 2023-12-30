@@ -19,6 +19,7 @@ class StoreKit {
 
   final premiumPublishSub = PublishSubject<bool>();
   final purchase = PublishSubject<bool>();
+  final cancelPublishSub = PublishSubject<bool>();
 
   Future<void> init() async {
     // Check Store
@@ -41,9 +42,13 @@ class StoreKit {
           // Purchase cancel
           final cancelPurchaseDetail = listPurchaseDetails
               .firstWhereOrNull((e) => e.status == PurchaseStatus.canceled);
-          if (cancelPurchaseDetail != null && Platform.isIOS) {
+          if (cancelPurchaseDetail != null) {
+            if (Platform.isIOS) {
+              await InAppPurchase.instance
+                  .completePurchase(cancelPurchaseDetail);
+            }
+            cancelPublishSub.add(true);
             AnalyticKit().logEvent(name: AnalyticEvent.purchaseCancel);
-            await InAppPurchase.instance.completePurchase(cancelPurchaseDetail);
           }
           // Check successfull purchases
           final successfullPurchaseDetail =

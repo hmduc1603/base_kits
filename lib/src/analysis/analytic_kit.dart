@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:base_kits/src/analysis/handlers/appflyer_handler.dart';
 import 'package:base_kits/src/analysis/handlers/base_handler.dart';
 import 'package:base_kits/src/analysis/handlers/firebase_handler.dart';
 
@@ -20,8 +19,6 @@ class AnalyticKit {
     for (var e in handlers) {
       if (e == FirebaseHandler) {
         _handlers.add(FirebaseHandler()..init());
-      } else if (e == AppFlyerHandler) {
-        _handlers.add(AppFlyerHandler()..init(afDevKey, afAppId));
       }
     }
   }

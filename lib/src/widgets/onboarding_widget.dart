@@ -17,6 +17,8 @@ class OnboardingWidget extends StatefulWidget {
   final List<OnboardingModel> list;
   final BoxFit? assetFit;
   final EdgeInsets? assetPadding;
+  final double? assetHeight;
+  final BorderRadius? assetBorderRadius;
   final TextStyle titleStyle;
   final EdgeInsets? titlePadding;
   final EdgeInsets? descPadding;
@@ -28,12 +30,14 @@ class OnboardingWidget extends StatefulWidget {
   final VoidCallback onDone;
   final Function(int page)? onPageChanged;
   final double? btnHeight;
+  final Widget Function(int index)? assetBuilder;
 
   const OnboardingWidget({
     Key? key,
     required this.list,
     this.assetPadding,
     this.assetFit,
+    this.assetHeight,
     required this.titleStyle,
     this.titlePadding,
     this.descPadding,
@@ -45,6 +49,8 @@ class OnboardingWidget extends StatefulWidget {
     required this.onDone,
     this.btnHeight,
     this.onPageChanged,
+    this.assetBorderRadius,
+    this.assetBuilder,
   }) : super(key: key);
 
   @override
@@ -85,12 +91,23 @@ class _OnboardingWidgetState extends State<OnboardingWidget> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  ConstrainedBox(
-                    constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.6),
-                    child: Image.asset(
-                      thisItem.assetImage,
-                      fit: widget.assetFit ?? BoxFit.fitWidth,
+                  Padding(
+                    padding: widget.assetPadding ?? const EdgeInsets.all(0),
+                    child: ClipRRect(
+                      borderRadius:
+                          widget.assetBorderRadius ?? BorderRadius.circular(0),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                            maxHeight: widget.assetHeight ??
+                                MediaQuery.of(context).size.height * 0.6),
+                        child: widget.assetBuilder != null
+                            ? widget.assetBuilder!(index)
+                            : Image.asset(
+                                thisItem.assetImage,
+                                fit: widget.assetFit ?? BoxFit.fitWidth,
+                                height: widget.assetHeight,
+                              ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -119,8 +136,8 @@ class _OnboardingWidgetState extends State<OnboardingWidget> {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      const SizedBox(height: 20),
                       if (thisItem.desc != null) ...{
+                        const SizedBox(height: 10),
                         Padding(
                           padding: widget.descPadding ??
                               const EdgeInsets.symmetric(horizontal: 15),
@@ -130,7 +147,8 @@ class _OnboardingWidgetState extends State<OnboardingWidget> {
                             textAlign: TextAlign.center,
                           ),
                         ),
-                      }
+                      },
+                      const SizedBox(height: 20),
                     ],
                   ))
                 ],

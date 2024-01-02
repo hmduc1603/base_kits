@@ -116,6 +116,12 @@ class StoreKit {
     );
   }
 
+  Future<bool> buyComsumable(ProductDetails productDetails) async {
+    return InAppPurchase.instance.buyConsumable(
+      purchaseParam: PurchaseParam(productDetails: productDetails),
+    );
+  }
+
   Future<void> queryProducts(Set<String> productIds) async {
     final ProductDetailsResponse response =
         await InAppPurchase.instance.queryProductDetails(productIds);

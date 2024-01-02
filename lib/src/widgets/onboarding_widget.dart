@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 
 class OnboardingModel {
   final String assetImage;
-  final String title;
+  final String? title;
   final String? desc;
   OnboardingModel({
     required this.assetImage,
-    required this.title,
+    this.title,
     this.desc,
   });
 }
@@ -127,15 +127,17 @@ class _OnboardingWidgetState extends State<OnboardingWidget> {
                                 .toDouble()),
                       ),
                       const SizedBox(height: 20),
-                      Padding(
-                        padding: widget.titlePadding ??
-                            const EdgeInsets.symmetric(horizontal: 15),
-                        child: AutoSizeText(
-                          thisItem.title,
-                          style: widget.titleStyle,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+                      if (thisItem.title != null) ...{
+                        Padding(
+                          padding: widget.titlePadding ??
+                              const EdgeInsets.symmetric(horizontal: 15),
+                          child: AutoSizeText(
+                            thisItem.title!,
+                            style: widget.titleStyle,
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      },
                       if (thisItem.desc != null) ...{
                         const SizedBox(height: 10),
                         Padding(

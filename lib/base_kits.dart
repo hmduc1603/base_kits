@@ -24,6 +24,7 @@ export '/src/rating/review_manager.dart';
 export '/src/util/duration_util.dart';
 export '/src/widgets/onboarding_widget.dart';
 export '/src/auth/auth_kit.dart';
+export '/src/util/date_util.dart';
 
 class BaseKits {
   static final BaseKits _instance = BaseKits._internal();

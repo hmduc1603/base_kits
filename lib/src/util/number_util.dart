@@ -3,8 +3,9 @@ import 'dart:math';
 import 'package:number_display/number_display.dart';
 
 class NumberUtil {
-  static String displayAsPrice(double value) {
-    final display = createDisplay(length: 10, decimal: 0);
+  static String displayAsPrice(double value,
+      {int length = 10, int decimal = 0}) {
+    final display = createDisplay(length: length, decimal: decimal);
     return display(value);
   }
 

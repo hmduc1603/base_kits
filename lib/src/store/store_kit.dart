@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
@@ -6,8 +8,10 @@ import 'package:base_kits/src/local/local_storage.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
-// ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:tuple/tuple.dart';
 
 class StoreKit {
   static final StoreKit _instance = StoreKit._internal();
@@ -18,8 +22,9 @@ class StoreKit {
   bool _isSuccessfullyRestored = false;
 
   final premiumPublishSub = PublishSubject<bool>();
-  final purchase = PublishSubject<bool>();
   final cancelPublishSub = PublishSubject<bool>();
+  final purchaseUniqueIdAndProductIdNotifier =
+      ValueNotifier<Tuple2<String?, String>?>(null);
 
   Future<void> init() async {
     // Check Store
@@ -29,10 +34,11 @@ class StoreKit {
       InAppPurchase.instance.purchaseStream
           .listen((List<PurchaseDetails> listPurchaseDetails) async {
         try {
-          log('Got value from purchase stream', name: 'StoreKit');
           // Complete purchase
           for (var i = 0; i < listPurchaseDetails.length; i++) {
             final purchase = listPurchaseDetails[i];
+            log('Got value from purchase stream: ${purchase.purchaseID}',
+                name: 'StoreKit');
             if (purchase.pendingCompletePurchase &&
                 purchase.status != PurchaseStatus.pending) {
               log('Completed pending purchase!', name: 'StoreKit');
@@ -72,6 +78,11 @@ class StoreKit {
             );
             log('Successfully restored/purchase purchase!!!: ${successfullPurchaseDetail.purchaseID}',
                 name: 'StoreKit');
+            log('localVerificationData: ${successfullPurchaseDetail.verificationData.localVerificationData}',
+                name: 'StoreKit');
+            log('serverVerificationData: ${successfullPurchaseDetail.verificationData.serverVerificationData}',
+                name: 'StoreKit');
+
             // Analytic
             if (kReleaseMode) {
               if (successfullPurchaseDetail.status ==
@@ -92,6 +103,18 @@ class StoreKit {
                 );
               }
             }
+            // Define unique id for puchase transaction
+            var purchaseUniqueId = successfullPurchaseDetail.purchaseID;
+            if (successfullPurchaseDetail is AppStorePurchaseDetails) {
+              purchaseUniqueId = successfullPurchaseDetail.skPaymentTransaction
+                  .originalTransaction?.transactionIdentifier;
+            } else if (successfullPurchaseDetail is GooglePlayPurchaseDetails) {
+              purchaseUniqueId =
+                  successfullPurchaseDetail.billingClientPurchase.orderId;
+            }
+            // Send successfullPurchaseDetail
+            purchaseUniqueIdAndProductIdNotifier.value =
+                Tuple2(purchaseUniqueId, successfullPurchaseDetail.productID);
             // Notify
             premiumPublishSub.add(true);
             // Save to local purchase
@@ -116,12 +139,6 @@ class StoreKit {
     );
   }
 
-  Future<bool> buyComsumable(ProductDetails productDetails) async {
-    return InAppPurchase.instance.buyConsumable(
-      purchaseParam: PurchaseParam(productDetails: productDetails),
-    );
-  }
-
   Future<void> queryProducts(Set<String> productIds) async {
     final ProductDetailsResponse response =
         await InAppPurchase.instance.queryProductDetails(productIds);
@@ -141,13 +158,14 @@ class StoreKit {
   bool get hasLocalPurchase => LocalStorage().lastLocalPurchase != null;
 
   Future<void> restorePurchase({
+    bool forceRestore = false,
     bool enableTimeOut = false,
     VoidCallback? onTimeOut,
     VoidCallback? onSuccessfullyRestored,
   }) async {
     _isSuccessfullyRestored = false;
     final lastPurchase = LocalStorage().lastLocalPurchase;
-    if (lastPurchase != null) {
+    if (lastPurchase != null && !forceRestore) {
       final isOutdated = _isPurchaseOutdated(
           lastPurchase.purchasedDateInMillisecond.toString(),
           lastPurchase.productId);
@@ -157,7 +175,6 @@ class StoreKit {
         // Notify
         premiumPublishSub.add(true);
         onSuccessfullyRestored != null ? onSuccessfullyRestored() : null;
-        return;
       }
     }
     try {

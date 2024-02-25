@@ -23,8 +23,9 @@ class OnboardingWidget extends StatefulWidget {
   final EdgeInsets? titlePadding;
   final EdgeInsets? descPadding;
   final TextStyle? descStyle;
-  final Color backgroundColor;
-  final Color btnColor;
+  final Color? backgroundColor;
+  final List<Color> btnColors;
+  final Color indicatorColor;
   final TextStyle btnTextStyle;
   final BorderRadius? btnBorderRadius;
   final VoidCallback onDone;
@@ -34,6 +35,7 @@ class OnboardingWidget extends StatefulWidget {
 
   const OnboardingWidget({
     Key? key,
+    required this.indicatorColor,
     required this.list,
     this.assetPadding,
     this.assetFit,
@@ -42,8 +44,8 @@ class OnboardingWidget extends StatefulWidget {
     this.titlePadding,
     this.descPadding,
     this.descStyle,
-    required this.backgroundColor,
-    required this.btnColor,
+    this.backgroundColor,
+    required this.btnColors,
     required this.btnTextStyle,
     this.btnBorderRadius,
     required this.onDone,
@@ -70,7 +72,7 @@ class _OnboardingWidgetState extends State<OnboardingWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: widget.backgroundColor,
+      backgroundColor: widget.backgroundColor ?? Colors.transparent,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -110,7 +112,7 @@ class _OnboardingWidgetState extends State<OnboardingWidget> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   Flexible(
                       child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -119,10 +121,11 @@ class _OnboardingWidgetState extends State<OnboardingWidget> {
                       SizedBox(
                         width: 80,
                         child: LinearProgressIndicator(
-                            backgroundColor: widget.btnColor.withOpacity(0.15),
+                            backgroundColor:
+                                widget.indicatorColor.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(100),
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(widget.btnColor),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                widget.indicatorColor),
                             value: ((currentIndex + 1) / widget.list.length)
                                 .toDouble()),
                       ),
@@ -176,7 +179,7 @@ class _OnboardingWidgetState extends State<OnboardingWidget> {
                   decoration: BoxDecoration(
                     borderRadius:
                         widget.btnBorderRadius ?? BorderRadius.circular(1000),
-                    color: widget.btnColor,
+                    gradient: LinearGradient(colors: widget.btnColors),
                   ),
                   child: Align(
                     alignment: AlignmentDirectional.center,

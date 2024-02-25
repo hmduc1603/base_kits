@@ -14,27 +14,32 @@ class SupportManager {
     required String subject,
     required List<String> recipients,
     required bool isPremium,
+    String? body,
   }) async {
     try {
       await FlutterEmailSender.send(Email(
         subject: subject,
         recipients: recipients,
-        body: await _prepareDefaultBody(isPremium: isPremium),
+        body: await _prepareDefaultBody(isPremium: isPremium, body: body),
       ));
     } catch (e, s) {
       FirebaseCrashlytics.instance.recordError(e, s);
     }
   }
 
-  Future<String> _prepareDefaultBody({    required bool isPremium,
-}) async {
+  Future<String> _prepareDefaultBody({
+    required bool isPremium,
+    String? body,
+  }) async {
     final appInfo = await PackageInfo.fromPlatform();
     if (Platform.isAndroid) {
       final deviceInfo = await DeviceInfoPlugin().androidInfo;
-      return 'Device: ${deviceInfo.model}\nApp Version: ${appInfo.version}\nPremium:$isPremium\n';
+      return body ??
+          'Device: ${deviceInfo.model}\nApp Version: ${appInfo.version}\nPremium:$isPremium\n';
     } else {
       final deviceInfo = await DeviceInfoPlugin().iosInfo;
-      return 'Device: ${deviceInfo.model}\nApp Version: ${appInfo.version}\nPremium:$isPremium\n';
+      return body ??
+          'Device: ${deviceInfo.model}\nApp Version: ${appInfo.version}\nPremium:$isPremium\n';
     }
   }
 }

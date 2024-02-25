@@ -31,10 +31,14 @@ class LocalStorage {
   }
 
   setLastLocalPurchase(LocalPurchaseEntity? localPurchaseEntity) async {
-    log('setLastLocalPurchase', name: 'LocalStorage');
-    if (localPurchaseEntity != null) {
-      await prefs.setString(
-          "_kLastLocalPurchase", jsonEncode(localPurchaseEntity.toJson()));
+    try {
+      log('setLastLocalPurchase', name: 'LocalStorage');
+      if (localPurchaseEntity != null) {
+        await prefs.setString(
+            "_kLastLocalPurchase", jsonEncode(localPurchaseEntity.toJson()));
+      }
+    } catch (e) {
+      log(e.toString());
     }
   }
 

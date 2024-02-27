@@ -26,6 +26,7 @@ export '/src/widgets/onboarding_widget.dart';
 export '/src/auth/auth_kit.dart';
 export '/src/util/date_util.dart';
 export '/src/support/report_manager.dart';
+export '/src/firebase/firestorage_kit.dart';
 
 class BaseKits {
   static final BaseKits _instance = BaseKits._internal();

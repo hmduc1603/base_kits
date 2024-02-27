@@ -69,11 +69,11 @@ class StoreKit {
           );
           if (successfullPurchaseDetail != null) {
             _isSuccessfullyRestored = true;
+            final productDetail = listProductDetails.firstWhereOrNull(
+                (e) => e.id == successfullPurchaseDetail.productID);
             SubscriptionTracking().update(
-              value: listProductDetails
-                  .firstWhereOrNull(
-                      (e) => e.id == successfullPurchaseDetail.productID)
-                  ?.rawPrice,
+              currency: productDetail?.currencyCode,
+              value: productDetail?.rawPrice,
               productId: successfullPurchaseDetail.productID,
             );
             log('Successfully restored/purchase purchase!!!: ${successfullPurchaseDetail.purchaseID}',

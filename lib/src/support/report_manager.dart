@@ -21,7 +21,7 @@ class ReportManager {
           'created_date': Timestamp.now(),
           'email': email,
           'msg': msg,
-          'info': _prepareDefaultBody(isPremium: isPremium)
+          'info': await _prepareDefaultBody(isPremium: isPremium)
         })
         .then((value) => log("did reported: $email - $msg}"))
         .catchError((error) => log("Failed to add user: $error"));

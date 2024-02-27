@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:package_info/package_info.dart';
 
-class FirebaseStorageKit {
-  static final FirebaseStorageKit _instance = FirebaseStorageKit._internal();
-  FirebaseStorageKit._internal();
-  factory FirebaseStorageKit() => _instance;
+class FireStoreKit {
+  static final FireStoreKit _instance = FireStoreKit._internal();
+  FireStoreKit._internal();
+  factory FireStoreKit() => _instance;
 
   Future<String> _getAppVersion() async {
     try {
@@ -29,8 +29,8 @@ class FirebaseStorageKit {
         FirebaseFirestore.instance.collection(collection);
     collectionRef
         .add(adjustedData)
-        .then((value) => log("addData ", name: "FirebaseStorageKit"))
-        .catchError((error) =>
-            log("Failed to add user: $error", name: "FirebaseStorageKit"));
+        .then((value) => log("addData ", name: "FireStoreKit"))
+        .catchError(
+            (error) => log("Failed to add user: $error", name: "FireStoreKit"));
   }
 }

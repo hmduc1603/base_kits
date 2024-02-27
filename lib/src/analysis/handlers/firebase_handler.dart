@@ -5,7 +5,7 @@ import 'package:base_kits/src/analysis/handlers/base_handler.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../firebase_storage/firebase_storage_kit.dart';
+import '../../firebase/firestore_kit.dart';
 
 class FirebaseHandler extends BaseHandler {
   Future<void> init() async {
@@ -36,7 +36,7 @@ class FirebaseHandler extends BaseHandler {
         log(error.toString());
       });
       if (name == AnalyticEvent.purchaseSuccess && value != null) {
-        FirebaseStorageKit()
+        FireStoreKit()
             .addData(collection: AnalyticEvent.purchaseSuccess, data: value);
       }
     }

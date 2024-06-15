@@ -155,7 +155,7 @@ class AdmobKit {
     final completer = Completer();
     try {
       await RewardedAd.load(
-        adUnitId: _adUnitConfig.appOpenId,
+        adUnitId: _adUnitConfig.rewardId,
         request: const AdRequest(),
         rewardedAdLoadCallback: RewardedAdLoadCallback(
           onAdLoaded: (ad) {
@@ -328,6 +328,10 @@ class AdmobKit {
       {Function(bool didShow)? onComplete, Function(int)? onRewarded}) async {
     try {
       log('showRewardAd', name: 'AdmobKit');
+      if (!adConfig.enableRewardAd) {
+        onComplete?.call(false);
+        return;
+      }
       if (_rewardedAd == null) {
         await preloadRewardAds();
       }
@@ -359,9 +363,13 @@ class AdmobKit {
 
   Future<void> forceShowRewardAds({Function(int point)? onCompleted}) async {
     try {
+      if (!adConfig.enableRewardAd) {
+        onCompleted?.call(0);
+        return;
+      }
       final completer = Completer();
       await RewardedAd.load(
-        adUnitId: _adUnitConfig.appOpenId,
+        adUnitId: _adUnitConfig.rewardId,
         request: const AdRequest(),
         rewardedAdLoadCallback: RewardedAdLoadCallback(
           onAdLoaded: (ad) {
@@ -380,6 +388,7 @@ class AdmobKit {
       await completer.future;
     } catch (e, s) {
       FirebaseCrashlytics.instance.recordError(e, s);
+      onCompleted?.call(0);
     }
   }
 }

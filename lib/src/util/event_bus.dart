@@ -15,6 +15,7 @@ class EventBus {
 
   void fire(dynamic value) {
     try {
+      log("EventBus - Fire: $value");
       _pubSub!.add(value);
     } catch (e) {
       log(e.toString(), name: "EventBus");

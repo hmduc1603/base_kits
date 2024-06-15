@@ -6,10 +6,12 @@ part 'local_purchase_entity.g.dart';
 class LocalPurchaseEntity {
   int purchasedDateInMillisecond;
   String productId;
+  String purchaseId;
 
   LocalPurchaseEntity({
     required this.purchasedDateInMillisecond,
     required this.productId,
+    required this.purchaseId,
   });
 
   factory LocalPurchaseEntity.fromJson(Map<String, dynamic> json) =>

@@ -11,19 +11,26 @@ class ReportManager {
   factory ReportManager() => _instance;
 
   Future<void> report(
-      {required String email,
+      {required String userEmail,
+      required String sendToEmail,
       required String msg,
       required bool isPremium}) async {
     CollectionReference report =
         FirebaseFirestore.instance.collection('report');
+    final defaultBody = await _prepareDefaultBody(isPremium: isPremium);
     await report
         .add({
           'created_date': Timestamp.now(),
-          'email': email,
+          'email': userEmail,
           'msg': msg,
-          'info': await _prepareDefaultBody(isPremium: isPremium)
+          'info': defaultBody,
+          'to': sendToEmail,
+          'message': {
+            "subject": "[Report Problem] $userEmail",
+            "html": "<p>$defaultBody</p><p>$msg</p>"
+          }
         })
-        .then((value) => log("did reported: $email - $msg}"))
+        .then((value) => log("did reported: $userEmail - $msg}"))
         .catchError((error) => log("Failed to add user: $error"));
   }
 

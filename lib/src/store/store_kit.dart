@@ -113,12 +113,14 @@ class StoreKit {
                   successfullPurchaseDetail.billingClientPurchase.orderId;
             }
             // Send successfullPurchaseDetail
+            log("Got purchase id: $purchaseUniqueId", name: 'StoreKit');
             purchaseUniqueIdAndProductIdNotifier.value =
                 Tuple2(purchaseUniqueId, successfullPurchaseDetail.productID);
             // Notify
             premiumPublishSub.add(true);
             // Save to local purchase
             LocalStorage().setLastLocalPurchase(LocalPurchaseEntity(
+              purchaseId: purchaseUniqueId ?? "",
               productId: successfullPurchaseDetail.productID,
               purchasedDateInMillisecond:
                   int.parse(successfullPurchaseDetail.transactionDate!),

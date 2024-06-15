@@ -10,11 +10,13 @@ class AdConfig {
   final bool enableInterstitialAd;
   final bool enableOpenAd;
   final bool enableBannerAd;
+  final bool enableRewardAd;
   final AdLimitation adLimitation;
   AdConfig({
     required this.enableInterstitialAd,
     required this.enableOpenAd,
     required this.enableBannerAd,
+    this.enableRewardAd = false,
     required this.adLimitation,
   });
 

@@ -10,6 +10,7 @@ LocalPurchaseEntity _$LocalPurchaseEntityFromJson(Map<String, dynamic> json) =>
     LocalPurchaseEntity(
       purchasedDateInMillisecond: json['purchasedDateInMillisecond'] as int,
       productId: json['productId'] as String,
+      purchaseId: json['purchaseId'] as String,
     );
 
 Map<String, dynamic> _$LocalPurchaseEntityToJson(
@@ -17,4 +18,5 @@ Map<String, dynamic> _$LocalPurchaseEntityToJson(
     <String, dynamic>{
       'purchasedDateInMillisecond': instance.purchasedDateInMillisecond,
       'productId': instance.productId,
+      'purchaseId': instance.purchaseId,
     };

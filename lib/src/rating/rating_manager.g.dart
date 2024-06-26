@@ -9,7 +9,7 @@ part of 'rating_manager.dart';
 RatingEntity _$RatingEntityFromJson(Map<String, dynamic> json) => RatingEntity(
       isRequested: json['isRequested'] as bool? ?? false,
       lastRequestedDateInMilliseconds:
-          json['lastRequestedDateInMilliseconds'] as int,
+          (json['lastRequestedDateInMilliseconds'] as num).toInt(),
     );
 
 Map<String, dynamic> _$RatingEntityToJson(RatingEntity instance) =>

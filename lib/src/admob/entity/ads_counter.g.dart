@@ -8,7 +8,7 @@ part of 'ads_counter.dart';
 
 AdsCounter _$AdsCounterFromJson(Map<String, dynamic> json) => AdsCounter(
       updatedDate: DateTime.parse(json['updatedDate'] as String),
-      adsCounting: json['adsCounting'] as int,
+      adsCounting: (json['adsCounting'] as num).toInt(),
     );
 
 Map<String, dynamic> _$AdsCounterToJson(AdsCounter instance) =>

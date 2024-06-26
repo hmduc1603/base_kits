@@ -8,9 +8,9 @@ part of 'ad_limitation.dart';
 
 AdLimitation _$AdLimitationFromJson(Map<String, dynamic> json) => AdLimitation(
       dailyInterstitialLimitation:
-          json['dailyInterstitialLimitation'] as int? ?? 1,
+          (json['dailyInterstitialLimitation'] as num?)?.toInt() ?? 1,
       showInterstitialAfterEveryNumber:
-          json['showInterstitialAfterEveryNumber'] as int? ?? 2,
+          (json['showInterstitialAfterEveryNumber'] as num?)?.toInt() ?? 2,
     );
 
 Map<String, dynamic> _$AdLimitationToJson(AdLimitation instance) =>

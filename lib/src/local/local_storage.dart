@@ -42,6 +42,15 @@ class LocalStorage {
     }
   }
 
+  removeLastLocalPurchase() async {
+    try {
+      log('removeLastLocalPurchase', name: 'LocalStorage');
+      await prefs.remove("_kLastLocalPurchase");
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
   LocalPurchaseEntity? get lastLocalPurchase {
     final data = prefs.getString("_kLastLocalPurchase");
     if (data != null) {

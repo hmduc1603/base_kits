@@ -8,9 +8,10 @@ part of 'local_purchase_entity.dart';
 
 LocalPurchaseEntity _$LocalPurchaseEntityFromJson(Map<String, dynamic> json) =>
     LocalPurchaseEntity(
-      purchasedDateInMillisecond: json['purchasedDateInMillisecond'] as int,
+      purchasedDateInMillisecond:
+          (json['purchasedDateInMillisecond'] as num).toInt(),
       productId: json['productId'] as String,
-      purchaseId: json['purchaseId'] as String,
+      purchaseId: json['purchaseId'] as String?,
     );
 
 Map<String, dynamic> _$LocalPurchaseEntityToJson(

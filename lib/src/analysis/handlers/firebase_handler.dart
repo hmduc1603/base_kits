@@ -26,19 +26,23 @@ class FirebaseHandler extends BaseHandler {
 
   @override
   void sendEvent(String name, Map<String, dynamic>? value) {
-    if (kReleaseMode) {
-      FirebaseAnalytics.instance
-          .logEvent(
-        name: name,
-        parameters: value,
-      )
-          .onError((error, stackTrace) {
-        log(error.toString());
-      });
-      if (name == AnalyticEvent.purchaseSuccess && value != null) {
-        FireStoreKit()
-            .addData(collection: AnalyticEvent.purchaseSuccess, data: value);
+    try {
+      if (kReleaseMode) {
+        FirebaseAnalytics.instance
+            .logEvent(
+          name: name,
+          parameters: value?.cast(),
+        )
+            .onError((error, stackTrace) {
+          log(error.toString());
+        });
+        if (name == AnalyticEvent.purchaseSuccess && value != null) {
+          FireStoreKit()
+              .addData(collection: AnalyticEvent.purchaseSuccess, data: value);
+        }
       }
+    } catch (e) {
+      log(e.toString(), name: "FirebaseHandler");
     }
   }
 }

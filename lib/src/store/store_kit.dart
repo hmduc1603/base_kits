@@ -7,6 +7,7 @@ import 'package:base_kits/base_kits.dart';
 import 'package:base_kits/src/local/local_storage.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:collection/collection.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
@@ -116,8 +117,6 @@ class StoreKit {
             log("Got purchase id: $purchaseUniqueId", name: 'StoreKit');
             purchaseUniqueIdAndProductIdNotifier.value =
                 Tuple2(purchaseUniqueId, successfullPurchaseDetail.productID);
-            // Notify
-            premiumPublishSub.add(true);
             // Save to local purchase
             LocalStorage().setLastLocalPurchase(LocalPurchaseEntity(
               purchaseId: purchaseUniqueId ?? "",
@@ -125,8 +124,11 @@ class StoreKit {
               purchasedDateInMillisecond:
                   int.parse(successfullPurchaseDetail.transactionDate!),
             ));
+            // Notify
+            premiumPublishSub.add(true);
           } else {
             log('Not found any purchases', name: 'StoreKit');
+            LocalStorage().removeLastLocalPurchase();
           }
         } catch (e, s) {
           FirebaseCrashlytics.instance.recordError(e, s);
@@ -135,10 +137,45 @@ class StoreKit {
     }
   }
 
+  LocalPurchaseEntity? get lastLocalPurchase =>
+      LocalStorage().lastLocalPurchase;
+
   Future<bool> makeAPurchase(ProductDetails productDetails) async {
     return InAppPurchase.instance.buyNonConsumable(
       purchaseParam: PurchaseParam(productDetails: productDetails),
     );
+  }
+
+  Future<String?> getPurchaseId() async {
+    return (await queryLastPurchaseID() ??
+        purchaseUniqueIdAndProductIdNotifier.value?.item1 ??
+        lastLocalPurchase?.purchaseId);
+  }
+
+  Future<String?> queryLastPurchaseID() async {
+    try {
+      await FlutterInappPurchase.instance.initialize();
+      final purchases =
+          await FlutterInappPurchase.instance.getAvailablePurchases();
+      if (purchases?.isNotEmpty == true) {
+        purchases
+            ?.sort((a, b) => a.transactionDate!.compareTo(b.transactionDate!));
+        if (Platform.isAndroid) {
+          final id = purchases!.last.transactionId;
+          log('Android - Last Purchase ID Found: $id', name: 'StoreKit');
+          return id;
+        } else {
+          final id = purchases!.last.originalTransactionIdentifierIOS;
+          log('IOS - Last Purchase ID Found: $id', name: 'StoreKit');
+          return id;
+        }
+      } else {
+        return null;
+      }
+    } catch (e) {
+      log('Not found any purchases', name: 'StoreKit');
+      return null;
+    }
   }
 
   Future<void> queryProducts(Set<String> productIds) async {

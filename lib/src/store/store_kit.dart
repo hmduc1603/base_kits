@@ -27,7 +27,11 @@ class StoreKit {
   final purchaseUniqueIdAndProductIdNotifier =
       ValueNotifier<Tuple2<String?, String>?>(null);
 
-  Future<void> init() async {
+  Future<void> init({bool shouldInit = true}) async {
+    if (!shouldInit) {
+      log('StoreKit was blocked from init by "shouldInit"', name: "StoreKit");
+      return;
+    }
     // Check Store
     final bool isAvailable = await InAppPurchase.instance.isAvailable();
     // Listen to purchase

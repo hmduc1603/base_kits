@@ -23,4 +23,13 @@ class FireStorageKit {
     );
     return result.ref.getDownloadURL();
   }
+
+  Future<void> removeFile({
+    required String directory,
+    required String fileName,
+  }) async {
+    final storageRef = FirebaseStorage.instance.ref();
+    final fileRef = storageRef.child("$directory/$fileName");
+    await fileRef.delete();
+  }
 }

@@ -53,4 +53,12 @@ class FormUtil {
     if (value.length > number) return onInvalid;
     return null;
   }
+
+  static String? validateNumber(
+      String? value, String onEmpty, String onInvalid) {
+    if (value == null) return null;
+    if (value.isEmpty) return onEmpty;
+    if (int.tryParse(value) == null) return onInvalid;
+    return null;
+  }
 }

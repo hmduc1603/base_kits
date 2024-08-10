@@ -23,7 +23,6 @@ dependencies:
   path_provider: ^2.0.11
   shared_preferences: ^2.0.18
   json_annotation: ^4.4.0
-  connectivity_plus: ^3.0.3
   in_app_review: ^2.0.6
   flutter_email_sender: ^5.2.0
   google_mobile_ads: ^3.0.0

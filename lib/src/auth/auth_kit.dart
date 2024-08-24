@@ -17,4 +17,8 @@ class AuthKit {
       throw Exception("Failed to get user id token!");
     }
   }
+
+  Future<void> revokeIdToken() {
+    return FirebaseAuth.instance.signOut();
+  }
 }

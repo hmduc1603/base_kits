@@ -142,7 +142,6 @@ class AdmobKit {
             completer.complete();
           },
         ),
-        orientation: AppOpenAd.orientationPortrait,
       );
       await completer.future;
     } catch (e) {
@@ -178,9 +177,25 @@ class AdmobKit {
 
   Future<void> init(AdConfig adConfig, AdUnitConfig adUnitConfig) async {
     initCompleter = Completer();
+    //final consentFormCompleter = Completer();
     _adUnitConfig = adUnitConfig;
     this.adConfig = adConfig;
     await MobileAds.instance.initialize();
+    //final params = ConsentRequestParameters();
+    // ConsentInformation.instance.requestConsentInfoUpdate(
+    //   params,
+    //   () async {
+    //     ConsentForm.loadConsentForm((form) {
+    //       consentFormCompleter.complete();
+    //     }, (error) {
+    //       consentFormCompleter.complete();
+    //     });
+    //   },
+    //   (FormError error) {
+    //     consentFormCompleter.complete();
+    //   },
+    // );
+    // await consentFormCompleter.future;
     await Future.wait([
       preloadOpenAds(),
       preloadIntersitial(),
@@ -295,7 +310,6 @@ class AdmobKit {
             log('OpenAds failed to load: $error', name: "AdmobKit");
           },
         ),
-        orientation: AppOpenAd.orientationPortrait,
       );
     } catch (e, s) {
       FirebaseCrashlytics.instance.recordError(e, s);

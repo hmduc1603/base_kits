@@ -25,7 +25,7 @@ dependencies:
   json_annotation: ^4.4.0
   in_app_review: ^2.0.6
   flutter_email_sender: ^5.2.0
-  google_mobile_ads: ^3.0.0
+  google_mobile_ads: ^5.1.0
   package_info_plus: ^4.0.2
   device_info_plus: ^8.2.2
   number_display: ^3.0.0

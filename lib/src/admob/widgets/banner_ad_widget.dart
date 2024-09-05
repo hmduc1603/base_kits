@@ -61,18 +61,14 @@ class _BannerAdWidgetState extends State<AdmobServiceBannerAdWidget> {
       return FutureBuilder(
           future: Future.delayed(const Duration(seconds: 5)),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return const SizedBox();
-            }
-            return const SizedBox(
-              height: 72.0,
+            return SizedBox(
+              height: AdSize.fullBanner.height.toDouble(),
             );
           });
     }
     return SafeArea(
       child: Container(
-        width: ad!.size.width.toDouble(),
-        height: ad!.size.height.toDouble(),
+        height: AdSize.fullBanner.height.toDouble(),
         alignment: Alignment.center,
         child: AdWidget(
           key: Key(ad!.responseInfo!.responseId!),

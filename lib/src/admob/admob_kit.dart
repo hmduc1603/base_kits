@@ -29,7 +29,7 @@ class AdmobKit {
       final completer = Completer<BannerAd?>();
       await BannerAd(
         adUnitId: _adUnitConfig.bannerId,
-        size: AdSize.banner,
+        size: AdSize.fullBanner,
         request: const AdRequest(),
         listener: BannerAdListener(
           onAdLoaded: (ad) {
@@ -70,7 +70,7 @@ class AdmobKit {
       final completer = Completer();
       await BannerAd(
         adUnitId: _adUnitConfig.bannerId,
-        size: AdSize.banner,
+        size: AdSize.fullBanner,
         request: const AdRequest(),
         listener: BannerAdListener(
           onAdLoaded: (ad) {

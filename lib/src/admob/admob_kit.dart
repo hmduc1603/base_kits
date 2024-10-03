@@ -23,6 +23,7 @@ class AdmobKit {
   RewardedAd? _rewardedAd;
   List<CustomBannerAd> bannerAds = [];
   Completer? initCompleter;
+  var _canRequestAds = false;
 
   Future<BannerAd?> forceShowBannerAd() async {
     try {
@@ -63,7 +64,7 @@ class AdmobKit {
   }
 
   Future<void> preloadBannerAd() async {
-    if (!adConfig.enableBannerAd) {
+    if (!adConfig.enableBannerAd || !_canRequestAds) {
       return;
     }
     try {
@@ -94,7 +95,7 @@ class AdmobKit {
   }
 
   Future<void> preloadIntersitial() async {
-    if (!adConfig.enableInterstitialAd) {
+    if (!adConfig.enableInterstitialAd || !_canRequestAds) {
       return;
     }
     // InterstitialAd
@@ -123,7 +124,7 @@ class AdmobKit {
   }
 
   Future<void> preloadOpenAds() async {
-    if (!adConfig.enableOpenAd) {
+    if (!adConfig.enableOpenAd || !_canRequestAds) {
       return;
     }
     final completer = Completer();
@@ -151,6 +152,9 @@ class AdmobKit {
   }
 
   Future<void> preloadRewardAds() async {
+    if (!adConfig.enableRewardAd || !_canRequestAds) {
+      return;
+    }
     final completer = Completer();
     try {
       await RewardedAd.load(
@@ -177,10 +181,8 @@ class AdmobKit {
 
   Future<void> init(AdConfig adConfig, AdUnitConfig adUnitConfig) async {
     initCompleter = Completer();
+    // Consent form
     final consentFormCompleter = Completer();
-    _adUnitConfig = adUnitConfig;
-    this.adConfig = adConfig;
-    await MobileAds.instance.initialize();
     final params = ConsentRequestParameters();
     ConsentForm? consentForm;
     ConsentInformation.instance.requestConsentInfoUpdate(
@@ -203,18 +205,25 @@ class AdmobKit {
       consentFormDismissCompleter.complete();
     });
     await consentFormDismissCompleter.future;
-    await Future.wait([
-      preloadOpenAds(),
-      preloadIntersitial(),
-      preloadBannerAd(),
-    ]);
+    // AdMob
+    _adUnitConfig = adUnitConfig;
+    this.adConfig = adConfig;
+    if (await ConsentInformation.instance.canRequestAds()) {
+      _canRequestAds = true;
+      await MobileAds.instance.initialize();
+      await Future.wait([
+        preloadOpenAds(),
+        preloadIntersitial(),
+        preloadBannerAd(),
+      ]);
+    }
     initCompleter?.complete();
     log('Completed initializing', name: 'AdmobKit');
   }
 
   void showInterstitialAd(
       {Function(bool didShow)? onComplete, VoidCallback? onReachLimit}) {
-    if (!adConfig.enableInterstitialAd) {
+    if (!adConfig.enableInterstitialAd || !_canRequestAds) {
       onComplete != null ? onComplete(false) : null;
       return;
     }
@@ -261,7 +270,7 @@ class AdmobKit {
   }
 
   Future<void> showAppOpenAd({Function(bool didShow)? onComplete}) async {
-    if (!adConfig.enableOpenAd) {
+    if (!adConfig.enableOpenAd || !_canRequestAds) {
       onComplete != null ? onComplete(false) : null;
       return;
     }
@@ -302,7 +311,7 @@ class AdmobKit {
   }
 
   Future<void> forceShowAppOpenAds() async {
-    if (!adConfig.enableOpenAd) {
+    if (!adConfig.enableOpenAd || !_canRequestAds) {
       return;
     }
     try {
@@ -324,7 +333,7 @@ class AdmobKit {
   }
 
   Future<void> forceShowInterstitialAds() async {
-    if (!adConfig.enableInterstitialAd) {
+    if (!adConfig.enableInterstitialAd || !_canRequestAds) {
       return;
     }
     try {
@@ -349,7 +358,7 @@ class AdmobKit {
       {Function(bool didShow)? onComplete, Function(int)? onRewarded}) async {
     try {
       log('showRewardAd', name: 'AdmobKit');
-      if (!adConfig.enableRewardAd) {
+      if (!adConfig.enableRewardAd || !_canRequestAds) {
         onComplete?.call(false);
         return;
       }
@@ -384,7 +393,7 @@ class AdmobKit {
 
   Future<void> forceShowRewardAds({Function(int point)? onCompleted}) async {
     try {
-      if (!adConfig.enableRewardAd) {
+      if (!adConfig.enableRewardAd || !_canRequestAds) {
         onCompleted?.call(0);
         return;
       }

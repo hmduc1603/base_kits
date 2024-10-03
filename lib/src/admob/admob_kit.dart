@@ -177,25 +177,32 @@ class AdmobKit {
 
   Future<void> init(AdConfig adConfig, AdUnitConfig adUnitConfig) async {
     initCompleter = Completer();
-    //final consentFormCompleter = Completer();
+    final consentFormCompleter = Completer();
     _adUnitConfig = adUnitConfig;
     this.adConfig = adConfig;
     await MobileAds.instance.initialize();
-    //final params = ConsentRequestParameters();
-    // ConsentInformation.instance.requestConsentInfoUpdate(
-    //   params,
-    //   () async {
-    //     ConsentForm.loadConsentForm((form) {
-    //       consentFormCompleter.complete();
-    //     }, (error) {
-    //       consentFormCompleter.complete();
-    //     });
-    //   },
-    //   (FormError error) {
-    //     consentFormCompleter.complete();
-    //   },
-    // );
-    // await consentFormCompleter.future;
+    final params = ConsentRequestParameters();
+    ConsentForm? consentForm;
+    ConsentInformation.instance.requestConsentInfoUpdate(
+      params,
+      () async {
+        ConsentForm.loadConsentForm((form) {
+          consentForm = form;
+          consentFormCompleter.complete();
+        }, (error) {
+          consentFormCompleter.complete();
+        });
+      },
+      (FormError error) {
+        consentFormCompleter.complete();
+      },
+    );
+    await consentFormCompleter.future;
+    final consentFormDismissCompleter = Completer();
+    consentForm?.show((error) {
+      consentFormDismissCompleter.complete();
+    });
+    await consentFormDismissCompleter.future;
     await Future.wait([
       preloadOpenAds(),
       preloadIntersitial(),

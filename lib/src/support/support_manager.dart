@@ -15,12 +15,14 @@ class SupportManager {
     required List<String> recipients,
     required bool isPremium,
     String? body,
+    List<String>? attachmentPaths,
   }) async {
     try {
       await FlutterEmailSender.send(Email(
         subject: subject,
         recipients: recipients,
         body: await _prepareDefaultBody(isPremium: isPremium, body: body),
+        attachmentPaths: attachmentPaths,
       ));
     } catch (e, s) {
       FirebaseCrashlytics.instance.recordError(e, s);

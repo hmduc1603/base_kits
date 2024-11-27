@@ -146,7 +146,10 @@ class StoreKit {
 
   Future<bool> makeAPurchase(ProductDetails productDetails) async {
     return InAppPurchase.instance.buyNonConsumable(
-      purchaseParam: PurchaseParam(productDetails: productDetails),
+      purchaseParam: PurchaseParam(
+        productDetails: productDetails,
+        applicationUserName: StringUtil.generateRandomString(11),
+      ),
     );
   }
 

@@ -6,7 +6,6 @@ import 'package:base_kits/src/admob/entity/custom_banner_ad.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:user_messaging_platform/user_messaging_platform.dart' as ump;
 import '../../base_kits.dart';
 import 'ads_counting_manager.dart';
 
@@ -182,40 +181,32 @@ class AdmobKit {
 
   Future<void> init(AdConfig adConfig, AdUnitConfig adUnitConfig) async {
     initCompleter = Completer();
-    // final status = await ConsentInformation.instance.getConsentStatus();
-    // if (status == ConsentStatus.required) {
-    //   // Consent form
-    //   final consentFormCompleter = Completer();
-    //   final params = ConsentRequestParameters();
-    //   ConsentForm? consentForm;
-    //   ConsentInformation.instance.requestConsentInfoUpdate(
-    //     params,
-    //     () async {
-    //       ConsentForm.loadConsentForm((form) {
-    //         consentForm = form;
-    //         consentFormCompleter.complete();
-    //       }, (error) {
-    //         consentFormCompleter.complete();
-    //       });
-    //     },
-    //     (FormError error) {
-    //       consentFormCompleter.complete();
-    //     },
-    //   );
-    //   await consentFormCompleter.future;
-    //   final consentFormDismissCompleter = Completer();
-    //   consentForm?.show((error) {
-    //     consentFormDismissCompleter.complete();
-    //   });
-    //   await consentFormDismissCompleter.future;
-    // }
-    // Make sure to continue with the latest consent info.
-    var info =
-        await ump.UserMessagingPlatform.instance.requestConsentInfoUpdate();
-    // Show the consent form if consent is required.
-    if (info.consentStatus == ump.ConsentStatus.required) {
-      // `showConsentForm` returns the latest consent info, after the consent from has been closed.
-      info = await ump.UserMessagingPlatform.instance.showConsentForm();
+    final status = await ConsentInformation.instance.getConsentStatus();
+    if (status == ConsentStatus.required) {
+      // Consent form
+      final consentFormCompleter = Completer();
+      final params = ConsentRequestParameters();
+      ConsentForm? consentForm;
+      ConsentInformation.instance.requestConsentInfoUpdate(
+        params,
+        () async {
+          ConsentForm.loadConsentForm((form) {
+            consentForm = form;
+            consentFormCompleter.complete();
+          }, (error) {
+            consentFormCompleter.complete();
+          });
+        },
+        (FormError error) {
+          consentFormCompleter.complete();
+        },
+      );
+      await consentFormCompleter.future;
+      final consentFormDismissCompleter = Completer();
+      consentForm?.show((error) {
+        consentFormDismissCompleter.complete();
+      });
+      await consentFormDismissCompleter.future;
     }
     // AdMob
     _adUnitConfig = adUnitConfig;

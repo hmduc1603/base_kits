@@ -24,15 +24,24 @@ class AdsCountingManager {
       if (adsCounter.updatedDate.day == DateTime.now().day) {
         if (adsCounter.adsCounting <
             AdmobKit().adConfig.adLimitation.dailyInterstitialLimitation) {
-          if (count == 0 ||
-              count %
-                      AdmobKit()
-                          .adConfig
-                          .adLimitation
-                          .showInterstitialAfterEveryNumber ==
-                  0) {
+          if (AdmobKit()
+                  .adConfig
+                  .adLimitation
+                  .showInterstitialAfterEveryNumber ==
+              0) {
             shouldShowAds = true;
             increaseCounter(adsCounter: adsCounter);
+          } else {
+            if (count == 0 ||
+                count %
+                        AdmobKit()
+                            .adConfig
+                            .adLimitation
+                            .showInterstitialAfterEveryNumber ==
+                    0) {
+              shouldShowAds = true;
+              increaseCounter(adsCounter: adsCounter);
+            }
           }
           count += 1;
         }

@@ -9,9 +9,13 @@ class AdmobServiceBannerAdWidget extends StatefulWidget {
   const AdmobServiceBannerAdWidget({
     super.key,
     this.useForceShow = false,
+    this.containerBackgroundColor,
+    this.loadingWidget,
   });
 
   final bool useForceShow;
+  final Color? containerBackgroundColor;
+  final Widget? loadingWidget;
 
   @override
   State<AdmobServiceBannerAdWidget> createState() => _BannerAdWidgetState();
@@ -61,8 +65,17 @@ class _BannerAdWidgetState extends State<AdmobServiceBannerAdWidget> {
       return FutureBuilder(
           future: Future.delayed(const Duration(seconds: 5)),
           builder: (context, snapshot) {
-            return SizedBox(
+            return Container(
+              padding: const EdgeInsets.all(5),
+              color: widget.containerBackgroundColor ?? Colors.grey[200],
               height: AdSize.fullBanner.height.toDouble(),
+              child: widget.loadingWidget ??
+                  const Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2.0,
+                    ),
+                  ),
             );
           });
     }

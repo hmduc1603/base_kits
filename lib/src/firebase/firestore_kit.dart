@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:package_info/package_info.dart';
 
 class FireStoreKit {
   static final FireStoreKit _instance = FireStoreKit._internal();
@@ -11,8 +10,7 @@ class FireStoreKit {
 
   Future<String> _getAppVersion() async {
     try {
-      final version = (await PackageInfo.fromPlatform()).version;
-      return version;
+      return "null";
     } catch (e) {
       log(e.toString());
       return "null";

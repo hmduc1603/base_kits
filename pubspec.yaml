@@ -27,7 +27,6 @@ dependencies:
   flutter_email_sender: ^6.0.3
   google_mobile_ads: ^5.2.0
   package_info_plus: ^8.1.2
-  device_info_plus: ^11.2.0
   number_display: ^3.0.0
   auto_size_text: ^3.0.0
   lit_relative_date_time: ^1.2.0

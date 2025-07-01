@@ -179,10 +179,11 @@ class AdmobKit {
     }
   }
 
-  Future<void> init(AdConfig adConfig, AdUnitConfig adUnitConfig) async {
+  Future<void> init(AdConfig adConfig, AdUnitConfig adUnitConfig,
+      {bool forceShowConsentForm = false}) async {
     initCompleter = Completer();
     final status = await ConsentInformation.instance.getConsentStatus();
-    if (status == ConsentStatus.required) {
+    if (status == ConsentStatus.required || forceShowConsentForm) {
       // Consent form
       final consentFormCompleter = Completer();
       final params = ConsentRequestParameters();
